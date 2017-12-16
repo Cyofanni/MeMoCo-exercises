@@ -49,10 +49,28 @@ void setupLP(CEnv env, Prob lp)
 		}
 	}
 	// add y vars [in o.f.: ... + F sum{ij} y_ij + ... ]
-	//TODO...
-
+	for (int i = 0; i < I; i++)
+	{
+		for (int j = 0; j < J; j++)
+		{
+			char ytype = 'B';
+			double lb = 0.0;
+			double ub = 1.0;
+			snprintf(name, NAME_SIZE, "y_%c_%c", nameI[i], nameJ[j]);
+			char* yname = (char*)(&name[0]);
+			CHECKED_CPX_CALL( CPXnewcols, env, lp, 1, &F, &lb, &ub, &ytype, &yname );
+		}
+	}
 	// add z var [in o.f.: ... + (L-F) z ]
-	//TODO...
+	{
+		char ztype = 'B';
+		double lb = 0.0;
+		double ub = 1.0;
+		double obj = L - F;
+		snprintf(name, NAME_SIZE, "z");
+		char* zname = (char*)(&name[0]);
+		CHECKED_CPX_CALL( CPXnewcols, env, lp, 1, &obj, &lb, &ub, &ztype, &zname );
+	}
 
         ///////////////////////////////////////////////////////////
         //
@@ -79,14 +97,25 @@ void setupLP(CEnv env, Prob lp)
 	}
 
 	// add capacity constraints (origin) [ forall i, sum{j} x_ij <= D_j ]
-	//TODO...
+	for (int i = 0; i < I; i++)
+	{
+		std::vector<int> idx(J);
+		std::vector<double> coef(J, 1.0);
+		char sense = 'L';
+		for (int j = 0; j < J; j++)
+		{
+			idx[j] = i*J + j; // corresponds to variable x_ij
+		}
+		int matbeg = 0;
+		CHECKED_CPX_CALL( CPXaddrows, env, lp, 0, 1, idx.size(), &D[i], &sense, &matbeg, &idx[0], &coef[0], 0, 0 );
+	}
 
 	// add linking constraints (x_ij - K y_ij <= 0 -- all variables on the left side!!!)
 	// version 1
 	for ( int i = 0 ; i < I ; ++i ) {
 		for ( int j = 0 ; j < J ; ++j ) {
 			std::vector<int> idx(2);
-			idx[0] = i*J + j;;    // x var
+			idx[0] = i*J + j;;        // x var
 			idx[1] = I*J+i*J+j;   // y var
 			std::vector<double> coef(2); 
 			coef[0] = 1.0;

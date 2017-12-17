@@ -67,7 +67,7 @@ void setupLP(CEnv env, Prob lp, Data data) {
         	std::vector<double> coef(static_cast<int>(data.n)-1, 1.0);   //coefficients for the variables in the constraints (data.n-1 coefs for data.n-1 vars)
 		for (int j = 0; j < static_cast<int>(data.n)-1; j++)
 		{
-			idx[j] = data.zero_index*data.n + j; // corresponds to variable x_0j
+			idx[j] = data.zero_index*(data.n-1) + j; // corresponds to variable x_0j
 		}        
 		char sense = 'E';
 		
@@ -87,10 +87,10 @@ void setupLP(CEnv env, Prob lp, Data data) {
 				
 		char sense = 'E';
 		for (int i = 0; i < static_cast<int>(data.n); i++){
-			idx1[i] = i*data.n + k; // corresponds to variable x_ik
+			idx1[i] = i*(data.n-1) + k; // corresponds to variable x_ik
 		}
 		for (int j = 0; j < static_cast<int>(data.n); j++){
-			idx2[j] = k*data.n + j; // corresponds to variable x_kj
+			idx2[j] = k*(data.n-1) + j; // corresponds to variable x_kj
 		}
 		idx1.insert(idx1.end(), idx2.begin(), idx2.end());  //concatenate the idx's
 		coef1.insert(coef1.end(), coef2.begin(), coef2.end());  //concatenate the coef's
@@ -101,20 +101,19 @@ void setupLP(CEnv env, Prob lp, Data data) {
 	}
 
 	// add third set of constraints (forall i, sum{i,j} y_ij = 1)
-	//FIXME: causes Segmentation fault
-	/*for (int i = 0 ; i < static_cast<int>(data.n); i++) {
+	for (int i = 0 ; i < static_cast<int>(data.n); i++) {
 		std::vector<int> idx(static_cast<int>(data.n)-1);
 		std::vector<double> coef(static_cast<int>(data.n)-1, 1.0);
 		for (int j = 0; j < static_cast<int>(data.n)-1; j++)
 		{
-		      idx[j] = (data.n*(data.n-1)) + i*data.n + j; //corresponds to variable y_ij: (data.n*(data.n-1)) is the offset needed to get the y_ij's
+		      idx[j] = (data.n*(data.n-1)) + i*(data.n-1) + j; //corresponds to variable y_ij: (data.n*(data.n-1)) is the offset needed to get the y_ij's
 		}        
 		char sense = 'E';
 		
         	int matbeg = 0;
 		double righthand = 1;
-	//	CHECKED_CPX_CALL(CPXaddrows, env, lp, 0, 1, idx.size(), &righthand, &sense, &matbeg, &idx[0], &coef[0], NULL, NULL);
-	}*/
+		CHECKED_CPX_CALL(CPXaddrows, env, lp, 0, 1, idx.size(), &righthand, &sense, &matbeg, &idx[0], &coef[0], NULL, NULL);
+	}
 
 	// add fourth set of constraints (forall j, sum{i,j} y_ij = 1)
 	//Like the previous, but doesn't trigger SIGSEGV
@@ -123,7 +122,7 @@ void setupLP(CEnv env, Prob lp, Data data) {
 		std::vector<double> coef(static_cast<int>(data.n)-1, 1.0);
 		for (int i = 0; i < static_cast<int>(data.n)-1; i++)
 		{
-		      idx[i] = (data.n*(data.n-1)) + i*data.n + j; //corresponds to variable y_ij: (data.n*(data.n-1)) is the offset needed to get the y_ij's
+		      idx[i] = (data.n*(data.n-1)) + i*(data.n-1) + j; //corresponds to variable y_ij: (data.n*(data.n-1)) is the offset needed to get the y_ij's
 		}        
 		char sense = 'E';
 		
@@ -133,11 +132,11 @@ void setupLP(CEnv env, Prob lp, Data data) {
 	}
 	
 	// add fifth set of constraints (linking constraints) (x_ij - N y_ij <= 0 -- all variables on the left side!!!)
-	/*for (int i = 0 ; i < static_cast<int>(data.n); ++i ) {
+	for (int i = 0 ; i < static_cast<int>(data.n); ++i ) {
 		for (int j = 0 ; j < static_cast<int>(data.n)-1; ++j) {
 			std::vector<int> idx(2);
-			idx[0] = i*data.n + j;;        // x var
-			idx[1] = (data.n*(data.n-1)) + i*data.n + j;   // y var  (data.n*(data.n-1)) is the offset needed to get the y_ij's
+			idx[0] = i*(data.n-1) + j;;        // x var
+			idx[1] = (data.n*(data.n-1)) + i*(data.n-1) + j;   // y var  (data.n*(data.n-1)) is the offset needed to get the y_ij's
 			std::vector<double> coef(2); 
 			coef[0] = 1.0;
 			coef[1] = -data.n;
@@ -146,7 +145,7 @@ void setupLP(CEnv env, Prob lp, Data data) {
 			int matbeg = 0;
 			CHECKED_CPX_CALL( CPXaddrows, env, lp, 0, 1, 2, &rhs, &sense, &matbeg, &idx[0], &coef[0], 0, 0 );
 		}
-	}*/
+	}
 }
 
 

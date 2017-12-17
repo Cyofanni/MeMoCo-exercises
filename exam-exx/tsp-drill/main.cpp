@@ -19,62 +19,79 @@ const int NAME_SIZE = 512;
 char name[NAME_SIZE];
 	
 void setupLP(CEnv env, Prob lp, Data data) {
-	// add x vars [in o.f.: sum{i,j} C_ij x_ij + ...]
-	for (int i = 0; i < data.n; i++) {
-		for (int j = 0; j < data.n; j++) {
+	// add x vars
+	for (int i = 0; i < static_cast<int>(data.n); i++) {
+		for (int j = 0; j < static_cast<int>(data.n); j++) {
 			char xtype = 'C';
 			double lb = 0.0;
 			double ub = data.n;
 			snprintf(name, NAME_SIZE, "x_%c_%c", data.node_names[i], data.node_names[j]);
 			char* xname = (char*)(&name[0]);
-			CHECKED_CPX_CALL( CPXnewcols, env, lp, 1   , &(data.time_costs[i*data.n+j]), &lb, &ub, &xtype, &xname );
+			/*Obj function has no "x_ij, so put zero as coefficient (fifth parameter)"*/
+			CHECKED_CPX_CALL( CPXnewcols, env, lp, 1, 0, &lb, &ub, &xtype, &xname );
 			/// status =      CPXnewcols (env, lp, ccnt, obj      , lb  , ub, xctype, colname);
 		}
 	}
 	// add y vars [in o.f.: ... + F sum{ij} y_ij + ... ]
-	/*for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
+	for (int i = 0; i < static_cast<int>(data.n); i++) {
+		for (int j = 0; j < static_cast<int>(data.n); j++) {
 			char xtype = 'B';
 			double lb = 0.0;
 			double ub = 1.0;
-			snprintf(name, NAME_SIZE, "y_%c_%c", node_names[i], node_names[j]);
+			snprintf(name, NAME_SIZE, "y_%c_%c", data.node_names[i], data.node_names[j]);
 			char* xname = (char*)(&name[0]);
-			CHECKED_CPX_CALL( CPXnewcols, env, lp, 1   , &F, &lb, &ub, &xtype, &xname );
+			CHECKED_CPX_CALL( CPXnewcols, env, lp, 1   , &(data.time_costs[i*data.n+j]), &lb, &ub, &xtype, &xname );
 			/// status =      CPXnewcols (env, lp, ccnt, obj      , lb  , ub, xctype, colname);
 		}
-	}*/
+	}
 
     ///////////////////////////////////////////////////////////
     //
     // now variables are stored in the following order
     //  x00 x01 ...   x10 x11 ... #xij #    ... ...   y00   y01   ...   y10   y11     ... #yij      #   ... ...
     // with indexes
-    //  0   1         J   J+1     #i*J+j#             I*J+0 I*J+1       I*J+J I*J+J+1     #I*J+i*J+j#        
+    //  0   1         N   N+1     #i*N+j#             I*N+0 I*N+1       I*N+N I*N+N+1     #I*N+i*N+j#        
     //
     ////////////
 
-	// add constraint on maximum flow coming out of 'ZERO' node (1st constraint from the model)
-	/*for (int j = 0; j < J; j++){
-	  //idx contains the variables in the constraint's left side (N variables of course)
-	        std::vector<int> idx(N);
-		std::vector<double> coef(N, 1.0);   //coefficients for the variables in the constraints (N coefs for N vars)
+	//add constraint on maximum flow coming out of 'ZERO' node (1st constraint from the model)
+	//NB: no external loop, it's just a single constraint
+        //idx contains the variables in the constraint's left side (N variables of course)
+	{
+		std::vector<int> idx(static_cast<int>(data.n));
+        	std::vector<double> coef(static_cast<int>(data.n), 1.0);   //coefficients for the variables in the constraints (data.n-1 coefs for data.n-1 vars)
+		for (int j = 0; j < static_cast<int>(data.n); j++)
+		{
+			idx[j] = data.zero_index*data.n + j; // corresponds to variable x_0j
+		}        
 		char sense = 'E';
-	       	idx[j] = zero_node_index * N + j;  // corresponds to variable x_ij
-		int matbeg = 0;
-		CHECKED_CPX_CALL( CPXaddrows, env, lp, 0     , 1     , idx.size(), N , &sense, &matbeg, &idx[0], &coef[0], NULL      , NULL      );
+		
+        	int matbeg = 0;
+		CHECKED_CPX_CALL( CPXaddrows, env, lp, 0, 1, idx.size(), &data.n, &sense, &matbeg, &idx[0], &coef[0], NULL, NULL);
+	} 
     	/// status =      CPXaddrows (        env, lp, colcnt, rowcnt, nzcnt     , righthandside  , sense , rmatbeg, rmatind, rmatval , newcolname, newrowname);
-	}*/
+	
 
-	// add capacity constraints (origin) [ forall i, sum{j} x_ij <= D_i ]
-	/*for (int i = 0; i < I; i++) {
-		std::vector<int> idx(J);
-		std::vector<double> coef(J, 1.0);
-		char sense = 'L';
-		for (int j = 0; j < J; j++)
-			idx[j] = i*J + j; // corresponds to variable x_ij
-		int matbeg = 0;
-		CHECKED_CPX_CALL( CPXaddrows, env, lp, 0     , 1     , idx.size(), &D[i], &sense, &matbeg, &idx[0], &coef[0], NULL      , NULL      );
-	}*/
+	// add incoming/outgoing flow constraints (2nd set of constraints from the model)
+	for (int k = 0; k < static_cast<int>(data.n)-1; k++) {
+		std::vector<int> idx1(static_cast<int>(data.n));   //variables in the 1st summation
+		std::vector<int> idx2(static_cast<int>(data.n));   //variables in the 2nd summation
+				
+		std::vector<double> coef1(static_cast<int>(data.n), 1.0);  //coefs for the variables in the 1st summation
+		std::vector<double> coef2(static_cast<int>(data.n), -1.0);  //coefs for the variables in the 2nd summation
+				
+		char sense = 'E';
+		for (int i = 0; i < static_cast<int>(data.n); i++){
+			idx1[i] = i*data.n + k; // corresponds to variable x_ik
+		}
+		for (int j = 0; j < static_cast<int>(data.n); j++){
+			idx2[j] = k*data.n + j; // corresponds to variable x_kj
+		}
+		idx1.insert(idx1.end(), idx2.begin(), idx2.end());
+		
+		/*int matbeg = 0;
+		CHECKED_CPX_CALL( CPXaddrows, env, lp, 0     , 1     , idx.size(), &D[i], &sense, &matbeg, &idx[0], &coef[0], NULL      , NULL      );*/
+	}
 
 	// add linking constraints (x_ij - K y_ij <= 0 -- all variables on the left side!!!)
 	// version 1
@@ -141,8 +158,10 @@ int main (int argc, char const *argv[]) {
 		CHECKED_CPX_CALL( CPXgetobjval, env, lp, &objval );
 		std::cout << "Objval: " << objval << std::endl;
 		int n = CPXgetnumcols(env, lp);
+
 		
-		if (n != 2*(data.n)*(data.n)+1) { throw std::runtime_error(std::string(__FILE__) + ":" + STRINGIZE(__LINE__) + ": " + "different number of variables"); }
+		
+		/*if (n != 2*(data.n)*(data.n)+1) { throw std::runtime_error(std::string(__FILE__) + ":" + STRINGIZE(__LINE__) + ": " + "different number of variables"); }
 	  	std::vector<double> varVals;
 		varVals.resize(n);
   		CHECKED_CPX_CALL( CPXgetx, env, lp, &varVals[0], 0, n - 1 );
@@ -155,7 +174,7 @@ int main (int argc, char const *argv[]) {
 		CHECKED_CPX_CALL( CPXsolwrite, env, lp, "tsp-drill.sol" );
 		// free
 		CPXfreeprob(env, &lp);
-		CPXcloseCPLEX(&env);
+		CPXcloseCPLEX(&env);*/
 	}
 	catch(std::exception& e) {
 		std::cout << ">>>EXCEPTION: " << e.what() << std::endl;

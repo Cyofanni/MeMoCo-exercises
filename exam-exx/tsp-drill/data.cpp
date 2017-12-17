@@ -19,7 +19,7 @@ void Data::read(const char* filename)
         // # of nodes initialized
 	std::cout << "n = " << n << std::endl;
 	char name;
-	for (int i = 0; i < n; i++){
+	for (int i = 0; i < static_cast<int>(n); i++){
 		in >> name;
 		node_names.push_back(name);
 		std::cout << name << std::endl;
@@ -39,6 +39,7 @@ void Data::read(const char* filename)
 
 	zero_name = node_names[zero_index];
         //zero node's name initialized
+	std::cout << zero_name << " at position " << zero_index << std::endl;
 
 	in.close();
 }

@@ -20,7 +20,7 @@ class Data
 public:
 	//QUESTION: are these types (e.g. vector) ok for CPlex functions?
 	Data() : n(0) {}
-	int n; // number of nodes
+	double n; // number of nodes
 	std::vector<char> node_names; // nodes' names
 	std::vector<double> time_costs;   // time costs to move the drill from i to j, LINEARIZED (just an implementation choice!)
 	int zero_index;	//index of the 'zero' node  
@@ -29,4 +29,4 @@ public:
 };
 
 
-#endif DATA_H
+#endif

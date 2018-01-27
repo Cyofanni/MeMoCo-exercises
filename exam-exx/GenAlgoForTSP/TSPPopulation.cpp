@@ -148,9 +148,12 @@ std::vector<TSPSolution> TSPPopulation::selectPair(){
 /*implements Best Individuals strategy:
   generate R new individuals from N old ones; keep
   the best N among the N + R */
-void TSPPopulation::replacePopulation(std::vector<TSPSolution> offspring){  
+void TSPPopulation::replacePopulation(std::vector<TSPSolution> offspring){
+	int dim_pop = population.size();  
 	population.insert(population.end(), offspring.begin(), offspring.end());    //append offspring to population
 	TSPSolutionComparator tsp_sol_comp;
 	tsp_sol_comp.set_tsp(tsp);
 	std::sort(population.begin(), population.end(), tsp_sol_comp);   //sort them in descending order
+	//discard the items past the n_th (dim_pop)
+	population.resize(dim_pop);
 }

@@ -25,7 +25,7 @@ public:
   * @param tsp TSP instance
   * @return ---
   */
-  TSPSolution(const TSP& tsp = TSP()){  // give default value
+  TSPSolution(const TSP& tsp = TSP()) {  // give default value
     sequence.reserve(tsp.n + 1);
     for (int i = 0; i < tsp.n; i++){
       sequence.push_back(i);

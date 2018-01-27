@@ -65,11 +65,3 @@ double TSPSolver::findBestNeighbor (const TSP& tsp, const TSPSolution& currSol ,
   /// ...TO HERE
   return bestCostVariation;
 }
-
-
-
-
-
-
-
-

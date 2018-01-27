@@ -49,7 +49,7 @@ public:
    */
   bool initRnd (TSPSolution& sol) {
     srand(time(NULL));
-    for ( uint i = 1 ; i < sol.sequence.size() ; ++i ) {
+    for (uint i = 1; i < sol.sequence.size(); ++i ) {
       // initial and final position are fixed (initial/final node remains 0)
       int idx1 = rand() % (sol.sequence.size()-2) + 1;
       int idx2 = rand() % (sol.sequence.size()-2) + 1;

@@ -154,6 +154,6 @@ void TSPPopulation::replacePopulation(std::vector<TSPSolution> offspring){
 	TSPSolutionComparator tsp_sol_comp;
 	tsp_sol_comp.set_tsp(tsp);
 	std::sort(population.begin(), population.end(), tsp_sol_comp);   //sort them in descending order
-	//discard the items past the n_th (dim_pop)
+	//discard the items past the nth (dim_pop)
 	population.resize(dim_pop);
 }

@@ -15,6 +15,10 @@ double TSPPopulation::total_pop_fitness(){
 	return total;
 }
 
+//think about it in the future
+void TSPPopulation::find_k_worst(int k){
+}
+
 TSPPopulation::TSPPopulation(const TSP& tsp, int dimPop){
 	this -> tsp = tsp;
 	for (int k = 0; k < dimPop; k++){
@@ -139,4 +143,14 @@ std::vector<TSPSolution> TSPPopulation::selectPair(){
 	return_pair.push_back(best_parent_2);
 	
 	return return_pair;
+}
+
+/*implements Best Individuals strategy:
+  generate R new individuals from N old ones; keep
+  the best N among the N + R */
+void TSPPopulation::replacePopulation(std::vector<TSPSolution> offspring){  
+	population.insert(population.end(), offspring.begin(), offspring.end());    //append offspring to population
+	TSPSolutionComparator tsp_sol_comp;
+	tsp_sol_comp.set_tsp(tsp);
+	std::sort(population.begin(), population.end(), tsp_sol_comp);   //sort them in descending order
 }

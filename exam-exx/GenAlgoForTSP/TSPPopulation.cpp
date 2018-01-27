@@ -6,6 +6,15 @@
 
 #include "TSPPopulation.h"
 
+double TSPPopulation::total_pop_fitness(){
+	double total = 0;
+	for(int i = 0; i < population.size(); i++){
+		total += TSPSolver::evaluate(population[i], tsp);
+	}
+	
+	return total;
+}
+
 TSPPopulation::TSPPopulation(const TSP& tsp, int dimPop){
 	this -> tsp = tsp;
 	for (int k = 0; k < dimPop; k++){
@@ -14,7 +23,7 @@ TSPPopulation::TSPPopulation(const TSP& tsp, int dimPop){
 	}
 }
 
-void TSPPopulation::initPopulation_random(){   // generate an inital random population
+void TSPPopulation::initPopulation_random(){   // generate an initial random population
 	for (int i = 0; i < population.size(); i++){
 		srand(time(NULL));
 		for (uint i = 1; i < population[i].solutionSize(); ++i) {
@@ -42,9 +51,9 @@ void TSPPopulation::initPopulation_simAnn(int maxTrials){
 	   and replace the random individual with the "annealed" one */
 	for (uint i = 0; i < population.size(); i++){    //for each individual
 		// run Simulated Annealing
+		srand(time(NULL));
 		for (uint k = 0; k < maxTrials; k++){
-			// generate a random (2-opt) neighbour
-			srand(time(NULL));
+			// generate a random (2-opt) neighbour	
 			int rand_from = rand() % (population[i].solutionSize()-2) + 1;   // +1 because position 0 is fixed
 			int rand_to = rand() % (population[i].solutionSize()-2) + (rand_from+1);
 			TSPMove move;
@@ -63,17 +72,16 @@ void TSPPopulation::initPopulation_simAnn(int maxTrials){
 					probability = exponentialVal;      //assign correct value to probability
 				}
 				
+				probability = probability * 100;      //easier to deal with percents    
 				srand(time(NULL));
-				int prob_indicator = rand() % static_cast<int>(probability);
+				int prob_indicator = rand() % static_cast<int>(101);
 				
 				if (prob_indicator < probability){      //replace current solution with the computed given probability value
 					population[i] = neighbourSol;
-				}
-				
+				}				
 			}
-			
-			
-			// temperature drop
+						
+			// temperature's drop
 			if (k == temp_thresh_1){
 				temperature = temperature / 2;
 			}
@@ -90,7 +98,45 @@ void TSPPopulation::initPopulation_simAnn(int maxTrials){
 	}
 }
 
-
 std::vector<TSPSolution> TSPPopulation::getPopulation(){
 	return population;
+}
+
+
+//pick up higher fitness solution with higher probability, use Montecarlo formula
+std::vector<TSPSolution> TSPPopulation::selectPair(){    
+	TSPSolution best_parent_1 = population[0];
+	TSPSolution best_parent_2 = population[0];
+	std::vector<TSPSolution> return_pair;
+	double total_fitness = total_pop_fitness();
+	
+	srand(time(NULL));
+	for(int i = 0; i < population.size(); i++){
+		if (TSPSolver::evaluate(population[i], tsp) >= TSPSolver::evaluate(best_parent_1, tsp)){
+			double curr_sol_fitness = TSPSolver::evaluate(population[i], tsp);   //current solution's fitness
+			double prob_val = curr_sol_fitness / total_fitness;  //Montecarlo formula
+			prob_val = prob_val * 100;  //becomes handier
+			int rand_val = rand() % 101;
+			
+			if (rand_val < prob_val){
+				best_parent_2 = best_parent_1;
+				best_parent_1 = population[i];
+			}	
+		}
+		else if (TSPSolver::evaluate(population[i], tsp) >= TSPSolver::evaluate(best_parent_2, tsp)){
+			double curr_sol_fitness = TSPSolver::evaluate(population[i], tsp);   //current solution's fitness
+			double prob_val = curr_sol_fitness / total_fitness;  //Montecarlo formula
+			prob_val = prob_val * 100;  //becomes handier with percents
+			int rand_val = rand() % 101;
+			
+			if (rand_val < prob_val){
+				best_parent_2 = population[i];
+			}
+		}
+	}
+	
+	return_pair.push_back(best_parent_1);
+	return_pair.push_back(best_parent_2);
+	
+	return return_pair;
 }

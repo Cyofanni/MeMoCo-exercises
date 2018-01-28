@@ -6,7 +6,6 @@
 #ifndef TSPPOPULATION_H
 #define TSPPOPULATION_H
 
-//#include "TSPSolution.h"
 #include "TSPSolver.h"
 #include <cmath>
 #include <climits>
@@ -16,6 +15,7 @@
 class TSPPopulation{
 	private: 
 		std::vector<TSPSolution> population;
+		int dimPop;
 		TSP tsp;
 		double total_pop_fitness();
 		void find_k_worst(int k);  //finds the k worst individuals and puts them as population's first elements
@@ -27,7 +27,7 @@ class TSPPopulation{
 		void initPopulation_simAnn(int maxTrials);    //initialize with Simulated Annealing (thus 'max trials')
 		std::vector<TSPSolution> getPopulation();
 		std::vector<TSPSolution> selectPair();
-		void replacePopulation(std::vector<TSPSolution> offspring);  //use Best Individuals strategy
+		TSPSolution replacePopulation(std::vector<TSPSolution> offspring);  //use Best Individuals strategy and return best solution
 };
 
 #endif

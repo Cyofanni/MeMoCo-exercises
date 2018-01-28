@@ -21,6 +21,7 @@ void TSPPopulation::find_k_worst(int k){
 
 TSPPopulation::TSPPopulation(const TSP& tsp, int dimPop){
 	this -> tsp = tsp;
+	this -> dimPop = dimPop;
 	for (int k = 0; k < dimPop; k++){
 		TSPSolution individual(tsp);
 		population.push_back(individual);
@@ -111,33 +112,46 @@ std::vector<TSPSolution> TSPPopulation::getPopulation(){
 std::vector<TSPSolution> TSPPopulation::selectPair(){    
 	TSPSolution best_parent_1 = population[0];
 	TSPSolution best_parent_2 = population[0];
+	int best_parent1_index = 0;
+	int best_parent2_index = 0;
+	
 	std::vector<TSPSolution> return_pair;
 	double total_fitness = total_pop_fitness();
 	
 	srand(time(NULL));
-	for(int i = 0; i < population.size(); i++){
-		if (TSPSolver::evaluate(population[i], tsp) >= TSPSolver::evaluate(best_parent_1, tsp)){
-			double curr_sol_fitness = TSPSolver::evaluate(population[i], tsp);   //current solution's fitness
-			double prob_val = curr_sol_fitness / total_fitness;  //Montecarlo formula
-			prob_val = prob_val * 100;  //becomes handier
-			int rand_val = rand() % 101;
+	for(int i = 0; i < population.size(); i++){  //if it hadn't been selected before
+		if (population[i].selectedForMating == 0){
+			if (TSPSolver::evaluate(population[i], tsp) <= TSPSolver::evaluate(best_parent_1, tsp)){  //we are minimizing
+				double curr_sol_fitness = TSPSolver::evaluate(population[i], tsp);   //current solution's fitness
+				double prob_val = curr_sol_fitness / total_fitness;  //Montecarlo formula
+				prob_val = prob_val * 100;  //becomes handier
+				int rand_val = rand() % 101;
 			
-			if (rand_val < prob_val){
-				best_parent_2 = best_parent_1;
-				best_parent_1 = population[i];
-			}	
-		}
-		else if (TSPSolver::evaluate(population[i], tsp) >= TSPSolver::evaluate(best_parent_2, tsp)){
-			double curr_sol_fitness = TSPSolver::evaluate(population[i], tsp);   //current solution's fitness
-			double prob_val = curr_sol_fitness / total_fitness;  //Montecarlo formula
-			prob_val = prob_val * 100;  //becomes handier with percents
-			int rand_val = rand() % 101;
+				if (rand_val < prob_val){
+					best_parent_2 = best_parent_1;
+					best_parent2_index = i;
+					best_parent_1 = population[i];
+					best_parent1_index = i;
+				}	
+			}
+			else if (TSPSolver::evaluate(population[i], tsp) <= TSPSolver::evaluate(best_parent_2, tsp)){  //we are minimizing
+				double curr_sol_fitness = TSPSolver::evaluate(population[i], tsp);   //current solution's fitness
+				double prob_val = curr_sol_fitness / total_fitness;  //Montecarlo formula
+				prob_val = prob_val * 100;  //becomes handier with percents
+				int rand_val = rand() % 101;
 			
-			if (rand_val < prob_val){
-				best_parent_2 = population[i];
+				if (rand_val < prob_val){
+					best_parent_2 = population[i];
+					best_parent2_index = i;
+				}
 			}
 		}
+			
 	}
+	
+	/*lock the 2 solutions, can't be selected anymore*/
+	population[best_parent1_index].selectedForMating = 1;
+	population[best_parent2_index].selectedForMating = 1;	
 	
 	return_pair.push_back(best_parent_1);
 	return_pair.push_back(best_parent_2);
@@ -148,12 +162,13 @@ std::vector<TSPSolution> TSPPopulation::selectPair(){
 /*implements Best Individuals strategy:
   generate R new individuals from N old ones; keep
   the best N among the N + R */
-void TSPPopulation::replacePopulation(std::vector<TSPSolution> offspring){
+TSPSolution TSPPopulation::replacePopulation(std::vector<TSPSolution> offspring){
 	int dim_pop = population.size();  
 	population.insert(population.end(), offspring.begin(), offspring.end());    //append offspring to population
 	TSPSolutionComparator tsp_sol_comp;
 	tsp_sol_comp.set_tsp(tsp);
-	std::sort(population.begin(), population.end(), tsp_sol_comp);   //sort them in descending order
+	std::sort(population.begin(), population.end(), tsp_sol_comp);   //sort them in descending order (ascending according to value, we are minimizing)
 	//discard the items past the nth (dim_pop)
 	population.resize(dim_pop);
+	return population[0];
 }

@@ -1,8 +1,21 @@
 #include "TSPCrossover.h"
 
-TSPCrossover::TSPCrossover(const TSPSolution& p1, const TSPSolution& p2){
+/*implement mutations as simple swap between nodes*/
+void TSPCrossover::do_mutation(TSPSolution& individual){
+	int rand_val = rand() % 101;
+	if (rand_val < mutation_probability){
+		int fstnode_index = (rand() % (individual.solutionSize() - 1)) + 1;
+		int sndnode_index = (rand() % (individual.solutionSize() - 1)) + (fstnode_index+1);
+		int swap_tmp = individual.sequence[fstnode_index];
+		individual.sequence[fstnode_index] = individual.sequence[sndnode_index];
+		individual.sequence[sndnode_index] = swap_tmp;
+	}
+}
+
+TSPCrossover::TSPCrossover(const TSPSolution& p1, const TSPSolution& p2, double mp){
 	parent_1 = p1;
-	parent_2 = p2; 
+	parent_2 = p2;
+	mutation_probability = mp; 
 }
 
 std::vector<TSPSolution> TSPCrossover::generateOffspring(){  //implements Partially-Mapped Crossover
@@ -78,6 +91,10 @@ std::vector<TSPSolution> TSPCrossover::generateOffspring(){  //implements Partia
 			child_2.sequence[i] = index_map.at(parent_2.sequence[i]);
 		}	
 	}
+	
+	/*mutate them, do_mutation will consider probability*/
+	do_mutation(child_1);
+	do_mutation(child_1);
 	
 	ret_offspring.push_back(child_1);
 	ret_offspring.push_back(child_2);

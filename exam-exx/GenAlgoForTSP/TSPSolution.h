@@ -19,6 +19,7 @@ class TSPSolution
 public:
   std::vector<int> sequence;
   TSP tsp;
+  bool selectedForMating;  //used to avoid selecting a solution multiple times
 public:
   /** Constructor 
   * build a standard solution as the sequence <0, 1, 2, 3 ... n-1, 0>
@@ -26,6 +27,7 @@ public:
   * @return ---
   */
   TSPSolution(const TSP& tsp = TSP()) {  // give default value
+    selectedForMating = 0;
     sequence.reserve(tsp.n + 1);
     for (int i = 0; i < tsp.n; i++){
       sequence.push_back(i);
@@ -113,7 +115,7 @@ class TSPSolutionComparator{
 		      val_right += tsp.cost[from1][to1];
 	      }
 		
-		  return (val_left > val_right);
+		  return (val_left < val_right);   //we are minimizing!
 	  }
 };
 

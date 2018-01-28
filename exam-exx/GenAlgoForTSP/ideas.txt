@@ -1,0 +1,10 @@
+*Our path representation sounds suitable for a genetic algo.
+*We'll need a "TSPpopulation" class representing the current solution pool.
+  **should contain an "init" method, which could for example implement Simulated Annealing to intialize the population (or just creating it randomly).
+  **should contain a "select" method, able to pick 2 solutions looking at their fitness value -> higher fitness solutions selected with higher probability.
+  **should contain a "replace" method.
+  **choose between "steady state", "elitism", "best individuals" replacement strategies.
+*We'll need a "TSPCrossOver" class, containing useful stuff to do the crossing over.
+  **should implement a specific crossover strategy (or just declare an abstract method), then we could implement other strategies through a hierarchy stemming from this class
+  **should introduce mutations
+  **can call an external local search to "replace an individual with the related local minimum"

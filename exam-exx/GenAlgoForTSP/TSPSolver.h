@@ -48,7 +48,7 @@ public:
    * @return true if everything OK, false otherwise
    */
   bool initRnd (TSPSolution& sol) {
-    srand(time(NULL));
+    //srand(time(NULL));  //seems to be the wrong place by debugging
     for (uint i = 1; i < sol.sequence.size(); ++i ) {
       // initial and final position are fixed (initial/final node remains 0)
       int idx1 = rand() % (sol.sequence.size()-2) + 1;
@@ -57,7 +57,7 @@ public:
       sol.sequence[idx1] = sol.sequence[idx2];
       sol.sequence[idx2] = tmp;
     }
-    std::cout << "### "; sol.print(); std::cout << " ###" << std::endl;
+   // std::cout << "### "; sol.print(); std::cout << " ###" << std::endl;
     return true;
   }
   

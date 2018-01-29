@@ -77,9 +77,9 @@ void TSPPopulation::initPopulation_simAnn(int maxTrials){
 					probability = exponentialVal;      //assign correct value to probability
 				}
 				
-				probability = probability * 100;      //easier to deal with percents    
+				probability = probability * 100;    //easier to deal with percents    
 				srand(time(NULL));
-				int prob_indicator = rand() % static_cast<int>(101);
+				int prob_indicator = rand() % 101;
 				
 				if (prob_indicator < probability){      //replace current solution with the computed given probability value
 					population[i] = neighbourSol;
@@ -103,7 +103,7 @@ void TSPPopulation::initPopulation_simAnn(int maxTrials){
 	}
 }
 
-std::vector<TSPSolution> TSPPopulation::getPopulation(){
+std::vector<TSPSolution> TSPPopulation::getPopulation() const{
 	return population;
 }
 
@@ -119,7 +119,8 @@ std::vector<TSPSolution> TSPPopulation::selectPair(){
 	double total_fitness = total_pop_fitness();
 	
 	srand(time(NULL));
-	for(int i = 0; i < population.size(); i++){  //if it hadn't been selected before
+	for(int i = 0; i < population.size(); i++){  
+		//if it hadn't been selected before
 		if (population[i].selectedForMating == 0){
 			if (TSPSolver::evaluate(population[i], tsp) <= TSPSolver::evaluate(best_parent_1, tsp)){  //we are minimizing
 				double curr_sol_fitness = TSPSolver::evaluate(population[i], tsp);   //current solution's fitness
@@ -171,4 +172,9 @@ TSPSolution TSPPopulation::replacePopulation(std::vector<TSPSolution> offspring)
 	//discard the items past the nth (dim_pop)
 	population.resize(dim_pop);
 	return population[0];
+}
+
+void TSPPopulation::copyPop(const TSPPopulation& pop){
+	std::vector<TSPSolution> get_pop = pop.getPopulation();
+	std::copy(get_pop.begin(), get_pop.end(), population.begin());
 }

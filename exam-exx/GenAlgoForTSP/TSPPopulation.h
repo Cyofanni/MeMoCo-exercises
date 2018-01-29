@@ -25,9 +25,10 @@ class TSPPopulation{
 	
 		void initPopulation_random();
 		void initPopulation_simAnn(int maxTrials);    //initialize with Simulated Annealing (thus 'max trials')
-		std::vector<TSPSolution> getPopulation();
+		std::vector<TSPSolution> getPopulation() const;
 		std::vector<TSPSolution> selectPair();
 		TSPSolution replacePopulation(std::vector<TSPSolution> offspring);  //use Best Individuals strategy and return best solution
+		void copyPop(const TSPPopulation& pop);
 };
 
 #endif

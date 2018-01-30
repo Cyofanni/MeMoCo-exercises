@@ -38,7 +38,7 @@ TSPSolution TSPGeneticRunner::run(){
 		for (int couple_counter = 0; couple_counter < num_couples_pergeneration; couple_counter++){
 			std::vector<TSPSolution> curr_couple = curr_population.selectPair();
 			TSPCrossover cross_over(curr_couple[0], curr_couple[1], mut_prob);
-			std::vector<TSPSolution> curr_oneoffspr = cross_over.generateOffspring();  //current selected couple's offspring
+			std::vector<TSPSolution> curr_oneoffspr = cross_over.generateOffspringTrials();  //current selected couple's offspring
 			curr_offspring.push_back(curr_oneoffspr[0]);   //add to current generation's offspring
 			curr_offspring.push_back(curr_oneoffspr[1]);			
 		}

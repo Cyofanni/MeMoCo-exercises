@@ -56,7 +56,7 @@ int main (int argc, char const *argv[])
     TSPCrossover co(sol1, sol2, mut_prob);   
     //CONTRUCTOR WORKS
     std::vector<TSPSolution> ofspr;
-    co.generateOffspring();
+    co.generateOffspringTrials();
     /*for (int i = 0; i < ofspr.size(); i++){
 		ofspr[i].print();
 		std::cout << std::endl;

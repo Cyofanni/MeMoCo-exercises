@@ -74,6 +74,17 @@ public:
     return *this;
   }
   
+  bool operator==(const TSPSolution& right) const{
+	  bool same = true;
+	  for (uint i = 0; i < sequence.size(); i++){
+          if (sequence[i] != right.sequence[i]){
+			  same = false;
+		  }
+	  }
+	  
+	  return same; 
+  }
+  
   /*solution comparator, useful for sorting*/
   //FIXME: USELESS CODE?
  /* bool operator<(TSPSolution& right){

@@ -3,9 +3,10 @@
 /*implement mutations as simple swap between nodes*/
 void TSPCrossover::do_mutation(TSPSolution& individual){
 	int rand_val = rand() % 101;
+	int sol_size = individual.solutionSize();
 	if (rand_val < mutation_probability){
-		int fstnode_index = (rand() % (individual.solutionSize() - 1)) + 1;
-		int sndnode_index = (rand() % (individual.solutionSize() - 1)) + (fstnode_index+1);
+		int fstnode_index = (rand() % (sol_size - 3)) + 1;
+		int sndnode_index = fstnode_index + 1 + (rand() % (sol_size-2-fstnode_index));
 		int swap_tmp = individual.sequence[fstnode_index];
 		individual.sequence[fstnode_index] = individual.sequence[sndnode_index];
 		individual.sequence[sndnode_index] = swap_tmp;
@@ -43,7 +44,7 @@ std::vector<TSPSolution> TSPCrossover::generateOffspring(bool& feasible_flag){  
 	
 	int fst_cut_ind_rnd = (rand() % (sol_size-3)) + 1;  //index for first cut
 	int snd_cut_ind_rnd = fst_cut_ind_rnd + 1 + (rand() % (sol_size-2-fst_cut_ind_rnd)); //index for first cut
-	std::cout << fst_cut_ind_rnd << " " << snd_cut_ind_rnd  << std::endl;
+	//std::cout << fst_cut_ind_rnd << " " << snd_cut_ind_rnd  << std::endl;
 	
 	std::map<int, int> index_map;
 	std::vector<int> conflict_zone_1;   //vector against which we check conflicts for child 1
@@ -113,13 +114,13 @@ std::vector<TSPSolution> TSPCrossover::generateOffspring(bool& feasible_flag){  
 		}	
 	}
 	
-	std::cout << std::endl;
+	/*std::cout << std::endl;
 	child_1.print();
 	std::cout << "  feasible?: " << is_feasible(child_1);
 	std::cout << std::endl;
 	child_2.print();
 	std::cout << "  feasible?: " << is_feasible(child_2);	
-	std::cout << std::endl;	
+	std::cout << std::endl;	*/
 	
 	if (is_feasible(child_1) && is_feasible(child_2)){
 		feasible_flag = true;
@@ -142,8 +143,8 @@ std::vector<TSPSolution> TSPCrossover::generateOffspringTrials(){
 	}
 	
 	for (int i = 0; i < 2; i++){
-		ret_offspring[i].print();
-		std::cout << std::endl;
+	//	ret_offspring[i].print();
+	//	std::cout << std::endl;
 	}
 	
 	return ret_offspring;

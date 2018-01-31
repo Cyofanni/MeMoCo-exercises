@@ -145,7 +145,7 @@ std::vector<TSPSolution> TSPPopulation::selectPair(){
 	//srand(time(NULL));
 	for(int i = 0; i < population.size(); i++){  
 		//if it hadn't been selected before
-		//if (population[i].selectedForMating == 0){
+		if (population[i].selectedForMating == 0){
 			double curr_sol_fitness = TSPSolver::evaluate(population[i], tsp);   //current solution's fitness		
 			double prob_val = curr_sol_fitness / total_fitness;  //Montecarlo formula
 			prob_val = prob_val * 100;  //becomes handier
@@ -154,32 +154,56 @@ std::vector<TSPSolution> TSPPopulation::selectPair(){
 			}
 			int rand_val = rand() % 101;
 			if (curr_sol_fitness <= min_eval_1){  //we are minimizing		
-				if (rand_val < prob_val){
+			//	if (rand_val < prob_val){
+					//std::cout << "ENTERED PROBABLE REGION" << std::endl;
 					best_parent_2 = best_parent_1;
 					best_parent2_index = best_parent1_index;
 					best_parent_1 = population[i];	
 					best_parent1_index = i;	
 					min_eval_1 = curr_sol_fitness;	
-				}	
+			//	}	
 			}
 			else if (curr_sol_fitness <= min_eval_2){  //we are minimizing
-				if (rand_val < prob_val){
+			//	if (rand_val < prob_val){
+				//	std::cout << "ENTERED PROBABLE REGION" << std::endl;
 					best_parent_2 = population[i];
 					best_parent2_index = i;
 					min_eval_2 = curr_sol_fitness;	
-				}		
+			//	}		
 			}
-		//}		
+		}		
 	}
-	
-	/*lock the 2 solutions, can't be selected anymore*/	
+
 	if (!(best_parent_1 == best_parent_2)){    //return them only if they are different
+		/*lock the 2 solutions, can't be selected anymore*/ 
+		//since montecarlo doesn't work, apply random exchange with some probability value
+		int rand_index_1 = 0;   //random index 
+		while (population[rand_index_1].selectedForMating == 1){
+			rand_index_1 = rand() % (dimPop-1);
+		}
+		int rand_index_2 = rand_index_1;
+		while (rand_index_2 == rand_index_1 || population[rand_index_2].selectedForMating == 1){
+			rand_index_2 = rand() % (dimPop-2);
+		}
+
+		int swap_prob = 20;       //probability of swapping
+		int randv = rand() % 101;
+		if (randv < swap_prob){
+		     best_parent_1 = population[rand_index_1]; 
+	    	     best_parent1_index = rand_index_1;
+
+                     best_parent_2 = population[rand_index_2];      
+		     best_parent2_index = rand_index_2;
+		}				
+
 		population[best_parent1_index].selectedForMating = 1;
 		population[best_parent2_index].selectedForMating = 1;
 	
 		best_parent_1.selectedForMating = 1;
 		best_parent_2.selectedForMating = 1;	
-		//std::cout << best_parent1_index << " " << best_parent2_index << std::endl;
+		std::cout << best_parent1_index << " " << best_parent2_index << std::endl;
+
+		
 	
 		return_pair.push_back(best_parent_1);
 		return_pair.push_back(best_parent_2);
@@ -187,7 +211,7 @@ std::vector<TSPSolution> TSPPopulation::selectPair(){
 		return return_pair;
 	}
 	else{   //otherwise, retry by recursion
-		selectPair();
+		return selectPair();
 	}
 }
 

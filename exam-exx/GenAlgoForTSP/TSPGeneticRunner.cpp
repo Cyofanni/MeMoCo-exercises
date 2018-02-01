@@ -19,15 +19,27 @@ TSPSolution TSPGeneticRunner::run(){
 	else{    //chosen Simulated Annealing
 		init_population.initPopulation_simAnn(sim_ann_max_iter);
 	}
+	
+	std::vector<TSPSolution> get_pop = init_population.getPopulation();
+	std::cout << "INITIAL POPULATION: " << std::endl;	
+	for (int i = 0; i < get_pop.size(); i++){
+		std::cout << i << ") ";
+		get_pop[i].print();
+		std::cout << "WITH VALUE: " << TSPSolver::evaluate(get_pop[i], tsp);	
+		std::cout << std::endl;
+		//std::cout << "SELECTED BIT: " << get_pop[i].selectedForMating;
+		//std::cout << std::endl;				
+	}
+	
 		
 	int generation = 0;
-	int num_couples_pergeneration = floor(population_size / 4);
+	int num_couples_pergeneration = ceil(population_size / 4.0);
 	TSPSolution bestGeneralSolution(tsp);   //best solution overall
 	std::vector<TSPSolution> bestSolutions;  //vector containing the best solution for each generation
-	
+		
 	TSPPopulation curr_population(tsp, population_size);   //current population, will evolve through generations
 	curr_population.copyPop(init_population);//copy initial to current
-	
+			
 	/*main loop through generations*/
 	while(generation < max_iter_n){	
 		std::vector<TSPSolution> curr_offspring;    //total offspring of current generation
@@ -45,6 +57,19 @@ TSPSolution TSPGeneticRunner::run(){
 		
 		TSPSolution bestSolCurrGen = curr_population.replacePopulation(curr_offspring);  //replace and get best solution for current generation+offspring
 		//after replacePopulation, curr_population is new -> evolution
+		
+		get_pop = curr_population.getPopulation();
+		std::cout << "GENERATION " << generation << "'s" << " CURRENT POPULATION AFTER CROSSOVER AND REPLACEMENT: " << std::endl;	
+		for (int i = 0; i < get_pop.size(); i++){
+			std::cout << i << ") ";
+			get_pop[i].print();
+			std::cout << "WITH VALUE: " << TSPSolver::evaluate(get_pop[i], tsp);	
+			std::cout << std::endl;
+			//std::cout << "SELECTED BIT: " << get_pop[i].selectedForMating;
+			//std::cout << std::endl;				
+		}
+		std::cout << std::endl;	
+		std::cout << std::endl;	
 		
 		bestSolutions.push_back(bestSolCurrGen);			
 		generation++;

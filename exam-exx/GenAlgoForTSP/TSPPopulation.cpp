@@ -174,7 +174,7 @@ std::vector<TSPSolution> TSPPopulation::selectPair(){
 		}		
 	}
 
-	if (!(best_parent_1 == best_parent_2)){    //return them only if they are different
+	//if (!(best_parent_1 == best_parent_2)){    //return them only if they are different
 		/*lock the 2 solutions, can't be selected anymore*/ 
 		//since montecarlo doesn't work, apply random exchange with some probability value
 		int rand_index_1 = 0;   //random index 
@@ -186,13 +186,12 @@ std::vector<TSPSolution> TSPPopulation::selectPair(){
 			rand_index_2 = rand() % (dimPop-2);
 		}
 
-		int swap_prob = 20;       //probability of swapping
+		int swap_prob = 80;       //probability of swapping
 		int randv = rand() % 101;
 		if (randv < swap_prob){
 		     best_parent_1 = population[rand_index_1]; 
-	    	     best_parent1_index = rand_index_1;
-
-                     best_parent_2 = population[rand_index_2];      
+	    	 best_parent1_index = rand_index_1;
+	    	 best_parent_2 = population[rand_index_2];      
 		     best_parent2_index = rand_index_2;
 		}				
 
@@ -201,31 +200,42 @@ std::vector<TSPSolution> TSPPopulation::selectPair(){
 	
 		best_parent_1.selectedForMating = 1;
 		best_parent_2.selectedForMating = 1;	
-		std::cout << best_parent1_index << " " << best_parent2_index << std::endl;
+		//std::cout << best_parent1_index << " " << best_parent2_index << std::endl;
 
-		
-	
 		return_pair.push_back(best_parent_1);
 		return_pair.push_back(best_parent_2);
 	
 		return return_pair;
-	}
-	else{   //otherwise, retry by recursion
+	//}
+	/*else{   //otherwise, retry by recursion
 		return selectPair();
-	}
+	}*/
 }
 
 /*implements Best Individuals strategy:
   generate R new individuals from N old ones; keep
   the best N among the N + R */
 TSPSolution TSPPopulation::replacePopulation(std::vector<TSPSolution> offspring){
-	int dim_pop = population.size();  
 	population.insert(population.end(), offspring.begin(), offspring.end());    //append offspring to population
 	TSPSolutionComparator tsp_sol_comp;
 	tsp_sol_comp.set_tsp(tsp);
 	std::sort(population.begin(), population.end(), tsp_sol_comp);   //sort them in descending order (ascending according to value, we are minimizing)
 	//discard the items past the nth (dim_pop)
-	population.resize(dim_pop);
+	for (int i = 1; i < dimPop; i++){    //leave the first 
+		int swap_prob = 40;       //probability of swapping
+		int randv = rand() % 101; 
+		if (randv < swap_prob){
+			//include some lower fitness solutions after dimPop, to improve diversification
+			int rand_index = dimPop + 1 + rand() % (offspring.size()-2);
+			population[i] = population[rand_index];
+		}
+	}
+	
+	population.resize(dimPop);	
+	
+	for (int i = 0; i < dimPop; i++){
+		population[i].selectedForMating = 0;
+	}
 	return population[0];
 }
 

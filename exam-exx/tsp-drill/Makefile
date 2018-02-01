@@ -2,11 +2,11 @@ CC = g++
 CPPFLAGS = -g -Wall -O2
 LDFLAGS =
 
-CPX_INCDIR  = /opt/CPLEX_Studio/cplex/include
-CPX_LIBDIR  =  /opt/CPLEX_Studio/cplex/lib/x86-64_linux/static_pic
+CPX_INCDIR  = /opt/ibm/ILOG/CPLEX_Studio1271/cplex/include
+CPX_LIBDIR  =  /opt/ibm/ILOG/CPLEX_Studio1271/cplex/lib/x86-64_linux/static_pic
 CPX_LDFLAGS = -lcplex -lm -pthread
 
-OBJ = main.o data.o 
+OBJ = main.o TSPSolver.o 
 
 %.o: %.cpp
 		$(CC) $(CPPFLAGS) -I$(CPX_INCDIR) -c $^ -o $@

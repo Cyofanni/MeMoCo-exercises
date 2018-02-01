@@ -63,7 +63,7 @@ int main (int argc, char const *argv[])
 	
 	
 	/*BEGIN POPULATION TEST*/
-	TSPPopulation pop(tspInstance, pop_size);
+	/*TSPPopulation pop(tspInstance, pop_size);
 	srand(time(NULL));
 	pop.initPopulation_random();
 	std::vector<TSPSolution> get_pop = pop.getPopulation();
@@ -87,48 +87,55 @@ int main (int argc, char const *argv[])
 		std::cout << std::endl;	
 	}*/
 	
-	std::vector<TSPSolution> curr_offspring;
-	for (int couple_counter = 0; couple_counter < ceil(pop_size/4.0); couple_counter++){
-		        std::cout << couple_counter << ")" << std::endl;
+	/*std::vector<TSPSolution> curr_offspring;*/
+	/*for (int couple_counter = 0; couple_counter < ceil(pop_size/4.0); couple_counter++){
+		    std::cout << couple_counter << ")" << std::endl;
 			std::vector<TSPSolution> curr_couple = pop.selectPair();
 			for (int i = 0; i < curr_couple.size(); i++){
 				curr_couple[i].print();
 				std::cout << "WITH VALUE: " << TSPSolver::evaluate(curr_couple[i], tspInstance);
 				std::cout << std::endl;
-				//std::cout << "SELECTED BIT: " << curr_couple[i].selectedForMating;
-				//std::cout << std::endl;		
 			}
-			std::cout << std::endl;
-			/*TSPCrossover cross_over(curr_couple[0], curr_couple[1], mut_prob);
+			TSPCrossover cross_over(curr_couple[0], curr_couple[1], mut_prob);
 			std::vector<TSPSolution> curr_oneoffspr = cross_over.generateOffspringTrials();  //current selected couple's offspring
 			curr_offspring.push_back(curr_oneoffspr[0]);   //add to current generation's offspring
-			curr_offspring.push_back(curr_oneoffspr[1]);*/			
-	}
-
-       std::cout << std::endl;
-       get_pop = pop.getPopulation();
-       for (int i = 0; i < get_pop.size(); i++){
-                std::cout << i << ") ";
-                get_pop[i].print();
-                std::cout << "WITH VALUE: " << TSPSolver::evaluate(get_pop[i], tspInstance);
-                std::cout << std::endl;
-                std::cout << "SELECTED BIT: " << get_pop[i].selectedForMating;
-                std::cout << std::endl;
-        }
-        std::cout << std::endl;
+			curr_offspring.push_back(curr_oneoffspr[1]);
+			std::cout << "WHOSE OFFSPRING IS: " << std::endl;
+			for (int i = 0; i < curr_oneoffspr.size(); i++){
+				curr_oneoffspr[i].print();
+				std::cout << "WITH VALUE: " << TSPSolver::evaluate(curr_oneoffspr[i], tspInstance);
+				std::cout << std::endl;
+			}
+			std::cout << std::endl;
+			std::cout << std::endl;						
+	}    
 		
-	//TSPSolution bestSolCurrGen = curr_population.replacePopulation(curr_offspring);  //replace and get best solution for current generation+offspring
-	
+	TSPSolution bestSolCurrGen = pop.replacePopulation(curr_offspring);  //replace and get best solution for current generation+offspring
+	std::vector<TSPSolution> get_pop1 = pop.getPopulation();
+	std::cout << "POPULATION AFTER REPLACEMENT: " << std::endl;	
+	for (int i = 0; i < get_pop1.size(); i++){
+		std::cout << i << ") ";
+		get_pop1[i].print();
+		std::cout << "WITH VALUE: " << TSPSolver::evaluate(get_pop1[i], tspInstance);	
+		std::cout << std::endl;
+		std::cout << "SELECTED BIT: " << get_pop[i].selectedForMating;
+		std::cout << std::endl;				
+	}*/
 	/*END POPULATION TEST*/
 	
     
     /*TSPGeneticRunner(TSP tsp, int population_size, uint max_iter_n,  
 								   double mut_prob, uint sim_ann_max_iter,
-								   bool choose_init)*/
-				
-				
-	
-	
+								   bool choose_init)*/			
+	TSPGeneticRunner exec(tspInstance, pop_size, n_of_generations, mut_prob,
+											sim_ann_max_iter, random_or_simanneal);
+	TSPSolution bestSolution = exec.run();
+    std::cout << std::endl;
+    std::cout << std::endl; 
+    std::cout << "*******BEST solution is: " << std::endl; 
+    bestSolution.print();
+    std::cout << "WITH VALUE: " << TSPSolver::evaluate(bestSolution, tspInstance);
+    std::cout << std::endl; 
     
     /// initialize clocks for running time recording
     ///   two ways:

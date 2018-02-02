@@ -147,16 +147,17 @@ std::vector<TSPSolution> TSPPopulation::selectPair(){
 	//srand(time(NULL));
 	for(int i = 0; i < population.size(); i++){  
 		//if it hadn't been selected before
-		if (population[i].selectedForMating == 0){
+	//	if (population[i].selectedForMating == 0){
 			double curr_sol_fitness = TSPSolver::evaluate(population[i], tsp);   //current solution's fitness		
 			double prob_val = 1 - (curr_sol_fitness/total_fitness);  //Montecarlo formula
 			prob_val = prob_val * 100;  //becomes handier
 			/*if (prob_val * 2 * 100 < 100){   //try to increase that little probability
 				prob_val = prob_val * 2 * 100;
 			}*/
-			std::uniform_real_distribution<double> unif(0, 100);
-                	std::default_random_engine re;
-			double rand_val = unif(re);
+			//std::uniform_real_distribution<double> unif(0, 100);
+                	//std::default_random_engine re;
+			//double rand_val = unif(re);
+			int rand_val = rand() % 100;
 			if (curr_sol_fitness <= min_eval_1){  //we are minimizing		
 				if (rand_val < prob_val){
 					//std::cout << "ENTERED PROBABLE REGION" << std::endl;
@@ -175,7 +176,7 @@ std::vector<TSPSolution> TSPPopulation::selectPair(){
 					min_eval_2 = curr_sol_fitness;	
 				}		
 			}
-		}		
+		//}		
 	}
 
 	//if (!(best_parent_1 == best_parent_2)){    //return them only if they are different
@@ -201,12 +202,17 @@ std::vector<TSPSolution> TSPPopulation::selectPair(){
 		     best_parent2_index = rand_index_2;
 		}*/				
 
-		population[best_parent1_index].selectedForMating = 1;
-		population[best_parent2_index].selectedForMating = 1;
+	//	population[best_parent1_index].selectedForMating = 1;
+	//	population[best_parent2_index].selectedForMating = 1;
 	
-		best_parent_1.selectedForMating = 1;
-		best_parent_2.selectedForMating = 1;	
+	//	best_parent_1.selectedForMating = 1;
+	//	best_parent_2.selectedForMating = 1;	
 		//std::cout << best_parent1_index << " " << best_parent2_index << std::endl;
+
+		population.erase(population.begin() + best_parent1_index);
+		/*if (best_parent1_index != best_parent2_index){
+			population.erase(population.begin() + best_parent2_index);		
+		}*/		
 
 		return_pair.push_back(best_parent_1);
 		return_pair.push_back(best_parent_2);
@@ -241,9 +247,9 @@ TSPSolution TSPPopulation::replacePopulation(std::vector<TSPSolution> offspring)
 	
 	population.resize(dimPop);	
 	
-	for (int i = 0; i < dimPop; i++){
+	/*for (int i = 0; i < dimPop; i++){
 		population[i].selectedForMating = 0;
-	}
+	}*/
 	return population[0];
 }
 

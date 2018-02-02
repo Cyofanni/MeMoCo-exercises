@@ -11,6 +11,7 @@
 #include <climits>
 #include <algorithm>
 #include <functional>
+#include <random>
 
 class TSPPopulation{
 	private: 

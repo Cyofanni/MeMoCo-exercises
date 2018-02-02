@@ -47,8 +47,10 @@ TSPSolution TSPGeneticRunner::run(){
 		/*generate an offspring of population_size/2 individuals,
 		 * thus, select population_size/4 pairs for mating*/
 		int couple_counter = 0;
+		TSPPopulation copy_for_select(tsp, population_size);  //I can remove solutions from a copy
+		copy_for_select.copyPop(curr_population);
 		for (int couple_counter = 0; couple_counter < num_couples_pergeneration; couple_counter++){
-			std::vector<TSPSolution> curr_couple = curr_population.selectPair();
+			std::vector<TSPSolution> curr_couple = copy_for_select.selectPair(); //select and remove from the copy
 			TSPCrossover cross_over(curr_couple[0], curr_couple[1], mut_prob);
 			std::vector<TSPSolution> curr_oneoffspr = cross_over.generateOffspringTrials();  //current selected couple's offspring
 			curr_offspring.push_back(curr_oneoffspr[0]);   //add to current generation's offspring

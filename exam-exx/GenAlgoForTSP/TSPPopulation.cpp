@@ -253,7 +253,11 @@ TSPSolution TSPPopulation::replacePopulation(std::vector<TSPSolution> offspring)
 	return population[0];
 }
 
-void TSPPopulation::copyPop(const TSPPopulation& pop){
+std::list<TSPSolution> TSPPopulation::copyPop(const TSPPopulation& pop){
+	std::list<TSPSolution> ret_list;
 	std::vector<TSPSolution> get_pop = pop.getPopulation();
 	std::copy(get_pop.begin(), get_pop.end(), population.begin());
+	std::copy(get_pop.begin(), get_pop.end(), std::back_inserter(ret_list));
+
+	return ret_list;
 }

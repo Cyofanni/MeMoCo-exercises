@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <functional>
 #include <random>
+#include <list>
 
 class TSPPopulation{
 	private: 
@@ -29,7 +30,7 @@ class TSPPopulation{
 		std::vector<TSPSolution> getPopulation() const;
 		std::vector<TSPSolution> selectPair();
 		TSPSolution replacePopulation(std::vector<TSPSolution> offspring);  //use Best Individuals strategy and return best solution
-		void copyPop(const TSPPopulation& pop);
+		std::list<TSPSolution> copyPop(const TSPPopulation& pop);
 };
 
 #endif

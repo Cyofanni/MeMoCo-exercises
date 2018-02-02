@@ -85,6 +85,8 @@ void TSPPopulation::initPopulation_simAnn(int maxTrials){
 			//std::cout << " " << currentSolVal << " " << neighbourSolVal << std::endl;
 			
 			if (neighbourSolVal < currentSolVal){
+				std::uniform_real_distribution<double> unif(0, 100);
+				std::default_random_engine re;
 				double exponentialVal = exp(-(neighbourSolVal-currentSolVal)/temperature); 
 				double probability = 1;
 				if (exponentialVal < 1){
@@ -93,7 +95,7 @@ void TSPPopulation::initPopulation_simAnn(int maxTrials){
 				
 				probability = probability * 100;    //easier to deal with percents    
 				//srand(time(NULL));
-				int prob_indicator = rand() % 101;
+				double prob_indicator = unif(re);
 						
 				if (prob_indicator < probability){      //replace current solution with the computed given probability value				
 					population[i] = neighbourSol;
@@ -129,7 +131,7 @@ std::vector<TSPSolution> TSPPopulation::getPopulation() const{
 }
 
 
-//pick up higher fitness solution with higher probability, use Montecarlo formula
+//pick up higher fitness (lower value) solution with higher probability, use Montecarlo formula
 std::vector<TSPSolution> TSPPopulation::selectPair(){    
 	double min_eval_1 = INT_MAX;
 	double min_eval_2 = INT_MAX;
@@ -147,29 +149,31 @@ std::vector<TSPSolution> TSPPopulation::selectPair(){
 		//if it hadn't been selected before
 		if (population[i].selectedForMating == 0){
 			double curr_sol_fitness = TSPSolver::evaluate(population[i], tsp);   //current solution's fitness		
-			double prob_val = curr_sol_fitness / total_fitness;  //Montecarlo formula
+			double prob_val = 1 - (curr_sol_fitness/total_fitness);  //Montecarlo formula
 			prob_val = prob_val * 100;  //becomes handier
-			if (prob_val * 2 * 100 < 100){   //try to increase that little probability
+			/*if (prob_val * 2 * 100 < 100){   //try to increase that little probability
 				prob_val = prob_val * 2 * 100;
-			}
-			int rand_val = rand() % 101;
+			}*/
+			std::uniform_real_distribution<double> unif(0, 100);
+                	std::default_random_engine re;
+			double rand_val = unif(re);
 			if (curr_sol_fitness <= min_eval_1){  //we are minimizing		
-			//	if (rand_val < prob_val){
+				if (rand_val < prob_val){
 					//std::cout << "ENTERED PROBABLE REGION" << std::endl;
 					best_parent_2 = best_parent_1;
 					best_parent2_index = best_parent1_index;
 					best_parent_1 = population[i];	
 					best_parent1_index = i;	
 					min_eval_1 = curr_sol_fitness;	
-			//	}	
+				}	
 			}
 			else if (curr_sol_fitness <= min_eval_2){  //we are minimizing
-			//	if (rand_val < prob_val){
+				if (rand_val < prob_val){
 				//	std::cout << "ENTERED PROBABLE REGION" << std::endl;
 					best_parent_2 = population[i];
 					best_parent2_index = i;
 					min_eval_2 = curr_sol_fitness;	
-			//	}		
+				}		
 			}
 		}		
 	}
@@ -177,7 +181,7 @@ std::vector<TSPSolution> TSPPopulation::selectPair(){
 	//if (!(best_parent_1 == best_parent_2)){    //return them only if they are different
 		/*lock the 2 solutions, can't be selected anymore*/ 
 		//since montecarlo doesn't work, apply random exchange with some probability value
-		int rand_index_1 = 0;   //random index 
+		/*int rand_index_1 = 0;   //random index 
 		while (population[rand_index_1].selectedForMating == 1){
 			rand_index_1 = rand() % (dimPop-1);
 		}
@@ -186,14 +190,16 @@ std::vector<TSPSolution> TSPPopulation::selectPair(){
 			rand_index_2 = rand() % (dimPop-2);
 		}
 
-		int swap_prob = 80;       //probability of swapping
-		int randv = rand() % 101;
+		std::uniform_real_distribution<double> unif(0, 100);
+		std::default_random_engine re;
+		double swap_prob = 60;       //probability of swapping
+		double randv = unif(re);
 		if (randv < swap_prob){
 		     best_parent_1 = population[rand_index_1]; 
 	    	 best_parent1_index = rand_index_1;
 	    	 best_parent_2 = population[rand_index_2];      
 		     best_parent2_index = rand_index_2;
-		}				
+		}*/				
 
 		population[best_parent1_index].selectedForMating = 1;
 		population[best_parent2_index].selectedForMating = 1;
@@ -221,15 +227,17 @@ TSPSolution TSPPopulation::replacePopulation(std::vector<TSPSolution> offspring)
 	tsp_sol_comp.set_tsp(tsp);
 	std::sort(population.begin(), population.end(), tsp_sol_comp);   //sort them in descending order (ascending according to value, we are minimizing)
 	//discard the items past the nth (dim_pop)
-	for (int i = 1; i < dimPop; i++){    //leave the first 
-		int swap_prob = 40;       //probability of swapping
-		int randv = rand() % 101; 
+	/*for (int i = 1; i < dimPop; i++){    //leave the first 
+		std::uniform_real_distribution<double> unif(0, 100);
+   		std::default_random_engine re;
+		double swap_prob = 0.1;       //probability of swapping
+		double randv = unif(re); 
 		if (randv < swap_prob){
-			//include some lower fitness solutions after dimPop, to improve diversification
+			//include some lower fitness(higher value) solutions after dimPop, to improve diversification
 			int rand_index = dimPop + 1 + rand() % (offspring.size()-2);
 			population[i] = population[rand_index];
 		}
-	}
+	}*/
 	
 	population.resize(dimPop);	
 	

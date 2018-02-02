@@ -2,7 +2,9 @@
 
 /*implement mutations as simple swap between nodes*/
 void TSPCrossover::do_mutation(TSPSolution& individual){
-	int rand_val = rand() % 101;
+	std::uniform_real_distribution<double> unif(0, 100);
+   	std::default_random_engine re;
+	double rand_val = unif(re);
 	int sol_size = individual.solutionSize();
 	if (rand_val < mutation_probability){
 		int fstnode_index = (rand() % (sol_size - 3)) + 1;
@@ -104,7 +106,7 @@ std::vector<TSPSolution> TSPCrossover::generateOffspring(bool& feasible_flag){  
 		else{   //if there was a conflict, use the mapping
 			child_1.sequence[i] = index_map.find(parent_1.sequence[i]) -> second;
 		}
-	/*	/*Conflict check for second child*/
+		/*Conflict check for second child*/
 		it_indicator = std::find(conflict_zone_2.begin(), conflict_zone_2.end(), parent_2.sequence[i]);
 	    if (it_indicator == conflict_zone_2.end()){     //if current parent's element hadn't be put in the child
 		   child_2.sequence[i] = parent_2.sequence[i];    //in this case we can insert the parent value in the corresponding child, at the same position

@@ -1,0 +1,7 @@
+Results without Simulated Annealing
+number of nodes n = 30
+population size: 500
+number of generations: 200
+mutation probability: 0.4
+simulated annealing?: 0
+simulated annealing max iterations: 0

@@ -9,11 +9,13 @@
 class TSPGeneticRunner{
 	private:
 		TSP tsp;
-		int population_size;  //accepts only even numbers, because just pairs mate
-		uint max_iter_n;  //max number of iterations (external loop)
-		double mut_prob;  //mutation probabilty
-		uint sim_ann_max_iter;  //max number of iterations for Simulated Annealing
+		int population_size;
+		uint max_iter_n;    //max number of iterations (external loop)
+		double mut_prob;  	//mutation probabilty
 		bool choose_init;   //0 for random initialization, 1 for Sim. Ann. initial. 
+		uint sim_ann_max_iter;  //max number of iterations for Simulated Annealing
+		std::default_random_engine rg;
+		std::uniform_real_distribution<double> distr;
 	
 	public:
 	    /* generate a population, select and mate couples,
@@ -21,8 +23,9 @@ class TSPGeneticRunner{
 	     * then get the best individual among all generations
 	     */
 	    TSPGeneticRunner(TSP tsp, int population_size, uint max_iter_n,  
-								   double mut_prob, uint sim_ann_max_iter,
-								   bool choose_init);
+								   double mut_prob, bool choose_init, 
+								   uint sim_ann_max_iter, const std::default_random_engine&,  
+								   const std::uniform_real_distribution<double>&);
 		TSPSolution run();
 		
 };

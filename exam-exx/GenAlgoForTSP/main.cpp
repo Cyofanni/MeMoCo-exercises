@@ -19,8 +19,8 @@ int main (int argc, char const *argv[])
 {
   try
   {
-    if (argc < 7){ 
-       throw std::runtime_error("usage: ./main filename.dat pop_size n_of_generations mut_prob(percent) random_or_simanneal sim_ann_max_iter");
+    if (argc < 8){ 
+       throw std::runtime_error("usage: ./main filename.dat pop_size n_of_generations mut_prob(percent) random_or_simanneal  sim_ann_max_iter known_optimum (0 if unknown)");
     }
     
     /// create the instance (reading data)
@@ -32,6 +32,8 @@ int main (int argc, char const *argv[])
     double mut_prob = atof(argv[4]);
     bool random_or_simanneal = atoi(argv[5]);
     int sim_ann_max_iter = atoi(argv[6]);
+    
+    double known_optimum = atof(argv[7]);   //to evaluate performances
     
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);
@@ -64,8 +66,12 @@ int main (int argc, char const *argv[])
     std::cout << std::endl; 
     std::cout << "*******BEST solution is: " << std::endl; 
     bestSolution.print();
-    std::cout << "WITH VALUE: " << TSPSolver::evaluate(bestSolution, tspInstance);
+    double value = TSPSolver::evaluate(bestSolution, tspInstance);
+    std::cout << "WITH VALUE: " << value;
     std::cout << std::endl;
+    std::cout << "WHICH IS: " << 100.0 - (((value-known_optimum)/known_optimum) * 100.0) << "% OF THE OPTIMUM";
+    std::cout << std::endl;
+    
     
     /// final clocks
     t2 = clock();

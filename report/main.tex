@@ -1,0 +1,341 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
+
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out
+                                                          % if you need a4paper
+%\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4
+                                                          % paper
+
+\IEEEoverridecommandlockouts                              % This command is only
+                                                          % needed if you want to
+                                                          % use the \thanks command
+\overrideIEEEmargins
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+
+
+
+% The following packages can be found on http:\\www.ctan.org
+%\usepackage{graphics} % for pdf, bitmapped graphics files
+%\usepackage{epsfig} % for postscript graphics files
+%\usepackage{mathptmx} % assumes new font selection scheme installed
+%\usepackage{times} % assumes new font selection scheme installed
+%\usepackage{amsmath} % assumes amsmath package installed
+%\usepackage{amssymb}  % assumes amsmath package installed
+\usepackage{listings}  % assumes amsmath package installed
+
+
+\title{\LARGE \bf
+\hspace*{ 0.5 in}Comparing exact and heuristic methods for the  \newline Traveling Salesperson-Electronic Board Drilling problem
+}
+
+%\author{ \parbox{3 in}{\centering Huibert Kwakernaak*
+%         \thanks{*Use the $\backslash$thanks command to put information here}\\
+%         Faculty of Electrical Engineering, Mathematics and Computer Science\\
+%         University of Twente\\
+%         7500 AE Enschede, The Netherlands\\
+%         {\tt\small h.kwakernaak@autsubmit.com}}
+%         \hspace*{ 0.5 in}
+%         \parbox{3 in}{ \centering Pradeep Misra**
+%         \thanks{**The footnote marks may be inserted manually}\\
+%        Department of Electrical Engineering \\
+%         Wright State University\\
+%         Dayton, OH 45435, USA\\
+%         {\tt\small pmisra@cs.wright.edu}}
+%}
+
+\author{Giovanni Mazzocchin}% <-this % stops a space
+%\thanks{*This work was not supported by any organization}% <-this % stops a space
+%\thanks{$^{1}$H. Kwakernaak is with Faculty of Electrical Engineering, Mathematics and Computer Science,
+%        University of Twente, 7500 AE Enschede, The Netherlands
+%        {\tt\small h.kwakernaak at papercept.net}}%
+%\thanks{$^{2}$P. Misra is with the Department of Electrical Engineering, Wright State University,
+%        Dayton, OH 45435, USA
+%        {\tt\small p.misra at ieee.org}}%
+%}
+
+
+\begin{document}
+
+
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+This report outlines some aspects of our work on the implementation of well-known exact and heuristic methods for the classic \textit{Travelling Salesperson-Electronic Board Drilling} problem.
+Implementation issues and evaluation outcomes will be included as well.
+\end{abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{INTRODUCTION}
+As the title suggests, our work is made up of two main parts:
+\begin{itemize}
+\item the first part comprises a C++ tiny program that utilises \textit{CPLEX}, a popular optimisation software which offers a library for this very language;
+\item the second part is made up of a quite larger program implementing a \textit{Genetic algorithm}. 
+\end{itemize}
+
+\section{Using \textit{CPLEX} to obtain an optimal solution}
+
+\subsection{Data extraction}
+The simplest yet essential component of this program is a class containing some methods able to read data from plain text files. These files should be generated according to the following template:
+\begin{itemize}
+\item the very first line should contain just a number standing for the problem's size;
+\item the remainder of the file should contain a symmetric matrix of real numbers equipped with this meaning: the number in position \textit{(i,j)} represents the cost needed to move from city (or \textit{hole}) \textit{i} to city \textit{j}.
+\end{itemize}
+
+\subsection{Core components and remarkable issues}
+The \textit{main} function works essentially as a starting point, namely, it does not perform anything remarkable except for calling our \textit{setupProblem} function (in \texttt{TSPSolver.h-cpp}) and carrying out some sanity checks.
+\lstset{language=C++,
+  basicstyle=\ttfamily,
+}
+\begin{lstlisting}[caption={Visit constraint}]
+for (int i = 0; i < data.n; i++){
+	coefs[i] = 1.0;
+	for (int j = 0; j < data.n; j++){
+            idx[j] = i*data.n + j;
+	}
+	CHECKED_CPX_CALL(CPXaddrows,
+        env, lp, 
+        0, 1, data.n, &rhs, &sense[0], 
+        &matbeg[0], &idx[0], &coefs[0],
+        NULL, NULL);
+}
+\end{lstlisting} 
+With respect to variables and respective coefficients, we resorted to plain STL 
+\textit{vectors}. As regards variables' ordering, we arbitrarily put the \textit{y}'s before the \textit{x}'s; note that we must take this priority into account for the sake of a correct access to variables and coefficients. Listing 2
+shows a sort of "preamble" which is quite common before any constraint.
+\begin{lstlisting}[caption={Important data structure declarations}]
+const int x_init_index = data.n*data.n;
+std::vector<int> idx(data.n);
+std::vector<double> coefs(data.n);
+\end{lstlisting}
+In the above code extract \texttt{x\_init\_index} represents the index where
+the \textit{x} variables start from: it is equal to the square of the problem's size due to the fact that every \textit{y} has two indices. The second line declares a vector, \texttt{idx} (whose size corresponds to the problem's dimension), which will store all the variables the following constraint will make use of. On the other hand, \texttt{coefs} will store the coefficients related to the variables in question.
+
+\subsection{Outcomes: reached optima and execution times}
+In order to evaluate this first part, we generated some reference random instances (which will be used by the second part as well) our program can be run on. \newline The following table gives some important pieces of information about this program's efficiency and effectiveness.
+\begin{table}[h]
+\caption{Results for the first part}
+\label{table_example}
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Size of the problem & Optimum & Time (in seconds) \\
+\hline
+12 &  66.4 &  0.38\\
+\hline
+26 & 937 & 0.85 \\
+\hline
+42 & 699 & 14.5\\
+\hline
+48 & 10628 & 24.5 \\
+\hline
+60 & 629.8 & 78.7 \\
+\hline
+100 & 21282 & 370 \\
+\hline
+200 & unknown & too large\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\section{Approximating the optimum through Genetic algorithms}
+The exact approach we described so far turns out to be quite unwieldy for attacking large instances, due to Simplex' inherent high time complexity.  
+This sad news has prompted researchers to develop some \textit{heuristics} 
+which should be able to yield approximate yet good solutions. A general method among these heuristics is the one we encounter in \textit{Genetic algorithms}.
+
+\subsection{Generic steps} 
+A traditional Genetic Algorithm for optimisation problems can be summarised as follows:
+\begin{enumerate}
+\item devise a suitable \textbf{encoding} for solutions(a.k.a. \underline{individuals}, hereafter there words will be interchangeable);
+\item generate an initial \textbf{population}, i.e., a set of solutions;
+\item \texttt{Loop}:
+\item \hspace*{ 0.2 mm} \underline{select} couples (or groups) of \textbf{parent} solutions;
+\item \hspace*{ 0.2 mm} generate an \textbf{offspring} thanks to \underline{recombination};
+\item \hspace*{ 0.2 mm} evaluate new solutions' \textbf{fitness} (this concept will be \hspace*{ 0.2 mm} clarified later on);
+\item \hspace*{ 0.2 mm} \underline{replace} current population using the offspring;
+\item \texttt{Until:} a sensible stopping criterion;
+\item \texttt{return} the best solution altogether.
+\end{enumerate}
+
+\subsection{Generating an initial population}
+The first issue we face is generating of a population as a good starting point for our algorithm. In this work we chose two strategies: the first leaves everything to chance, creating a random pool of feasible solutions the algorithm can start from, whereas the latter performs some \textit{local search} (namely a certain amount of iterations with \textit{Simulated Annealing}) on each individual, so that hopefully (but we do know that Simulated Annealing accomplishes its goal) the "genetic loop" is provided with a higher-quality initial population.  
+\begin{lstlisting}[caption={Code within main annealing loop, from \texttt{TSPPopulation.cpp}}]
+double neighbourVal=evaluate(neighbourSol);   
+double probability;
+double diff = neighbourVal-currentSolVal;
+if (neighbourVal < currentSolVal){
+ double exponentialVal=exp(-(diff)/temp); 
+ double probability = 1;
+ if (exponentialVal < 1){
+   probability = exponentialVal;
+ }
+ probability = probability * 100;    
+ int prob_indicator = distr(rg);		
+ if (prob_indicator < probability){   					
+   population[i] = neighbourSol;
+ }				
+}
+// temperature's drop
+if (k == temp_thresh_1){
+ temp = temp / 2;
+}
+\end{lstlisting}
+
+\subsection{Selecting individuals for mating}
+First of all, we should choose whether we want to perform mating on pairs
+or larger-sized groups of individuals. We decided to implement the former option due to its simplicity and overall effectiveness. \newline
+Plenty of selection criteria have been proposed in the literature: our choice fell on \textit{Tournament selection}, whose pseudocode is given below: \newline\newline
+\texttt{\textit{First step}: choose k individuals from the population at random
+\newline \textit{Second step}: choose the best individual from the 
+tournament with probability p
+\newline \textit{Third step}: choose the second best individual 
+with probability $p*(1-p)$
+\newline \textit{N-th step}: choose the n-th best individual 
+with probability $p\times((1-p)^(n-2))$}
+\newline\newline
+It can be shown that this strategy does not suffer from any bias towards "super-individuals" (that is, individuals endowed with better fitness), since it is easy to realize its independence from individuals' fitness values.
+
+
+\subsection{Recombining individuals through Crossover}
+As far as descendants' generation is concerned, we know we can carry it out thanks to various kinds of \textit{Crossover operators}. Generally speaking, we
+could think of Crossover as a way to include a combination of the parents' features into a child. As we have seen in the context of selection, there are lots of proposed operators in this context as well, which may vary in cost and
+effectiveness. The latter requirement matters particularly in the setting we are working on: in fact, any operator that generates an offspring without being concerned about its feasibility would not be deemed as much effective.
+We wrote the code both for \textit{Partially-Mapped Crossover} and \textit{Order Crossover}, but since the former operator does not enforce feasibility, we are more amenable to go through the latter's steps.
+\begin{lstlisting}[caption={Order Crossover, in \texttt{TSPCrossover.cpp}}]
+for (int i = 1; i < sol_size - 1; i++){
+ if (child1Counter==fst_cut_ind_rnd){
+  child1Counter=child1Counter+confZoneSize;
+ }
+ if (child_2_counter==fst_cut_ind_rnd){
+  child2Counter=child2Counter+confZoneSize;
+ }
+ it_indicator = std::find(conflictZone.begin(),
+  conflictZone.end(), parent1[i]);
+ if(it_indicator==conflictZone.end()){
+  child1.sequence[child1Counter]=parent1[i]; 		                            
+ }
+}		
+\end{lstlisting}
+
+\subsection{Some Common Mistakes}
+\begin{itemize}
+
+
+\item The word ÒdataÓ is plural, not singular.
+\item The subscript for the permeability of vacuum ?0, and other common scientific constants, is zero with subscript formatting, not a lowercase letter ÒoÓ.
+\item In American English, commas, semi-/colons, periods, question and exclamation marks are located within quotation marks only when a complete thought or name is cited, such as a title or full quotation. When quotation marks are used, instead of a bold or italic typeface, to highlight a word or phrase, punctuation should appear outside of the quotation marks. A parenthetical phrase or statement at the end of a sentence is punctuated outside of the closing parenthesis (like this). (A parenthetical sentence is punctuated within the parentheses.)
+\item A graph within a graph is an ÒinsetÓ, not an ÒinsertÓ. The word alternatively is preferred to the word ÒalternatelyÓ (unless you really mean something that alternates).
+\item Do not use the word ÒessentiallyÓ to mean ÒapproximatelyÓ or ÒeffectivelyÓ.
+\item In your paper title, if the words Òthat usesÓ can accurately replace the word ÒusingÓ, capitalize the ÒuÓ; if not, keep using lower-cased.
+\item Be aware of the different meanings of the homophones ÒaffectÓ and ÒeffectÓ, ÒcomplementÓ and ÒcomplimentÓ, ÒdiscreetÓ and ÒdiscreteÓ, ÒprincipalÓ and ÒprincipleÓ.
+\item Do not confuse ÒimplyÓ and ÒinferÓ.
+\item The prefix ÒnonÓ is not a word; it should be joined to the word it modifies, usually without a hyphen.
+\item There is no period after the ÒetÓ in the Latin abbreviation Òet al.Ó.
+\item The abbreviation Òi.e.Ó means Òthat isÓ, and the abbreviation Òe.g.Ó means Òfor exampleÓ.
+
+\end{itemize}
+
+
+\section{USING THE TEMPLATE}
+
+Use this sample document as your LaTeX source file to create your document. Save this file as {\bf root.tex}. You have to make sure to use the cls file that came with this distribution. If you use a different style file, you cannot expect to get required margins. Note also that when you are creating your out PDF file, the source file is only part of the equation. {\it Your \TeX\ $\rightarrow$ PDF filter determines the output file size. Even if you make all the specifications to output a letter file in the source - if you filter is set to produce A4, you will only get A4 output. }
+
+It is impossible to account for all possible situation, one would encounter using \TeX. If you are using multiple \TeX\ files you must make sure that the ``MAIN`` source file is called root.tex - this is particularly important if your conference is using PaperPlaza's built in \TeX\ to PDF conversion tool.
+
+\subsection{Headings, etc}
+
+Text heads organize the topics on a relational, hierarchical basis. For example, the paper title is the primary text head because all subsequent material relates and elaborates on this one topic. If there are two or more sub-topics, the next level head (uppercase Roman numerals) should be used and, conversely, if there are not at least two sub-topics, then no subheads should be introduced. Styles named ÒHeading 1Ó, ÒHeading 2Ó, ÒHeading 3Ó, and ÒHeading 4Ó are prescribed.
+
+\subsection{Figures and Tables}
+
+Positioning Figures and Tables: Place figures and tables at the top and bottom of columns. Avoid placing them in the middle of columns. Large figures and tables may span across both columns. Figure captions should be below the figures; table heads should appear above the tables. Insert figures and tables after they are cited in the text. Use the abbreviation ÒFig. 1Ó, even at the beginning of a sentence.
+
+\begin{table}[h]
+\caption{An Example of a Table}
+\label{table_example}
+\begin{center}
+\begin{tabular}{|c||c|}
+\hline
+One & Two\\
+\hline
+Three & Four\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+
+   \begin{figure}[thpb]
+      \centering
+      \framebox{\parbox{3in}{We suggest that you use a text box to insert a graphic (which is ideally a 300 dpi TIFF or EPS file, with all fonts embedded) because, in an document, this method is somewhat more stable than directly inserting a picture.
+}}
+      %\includegraphics[scale=1.0]{figurefile}
+      \caption{Inductance of oscillation winding on amorphous
+       magnetic core versus DC bias magnetic field}
+      \label{figurelabel}
+   \end{figure}
+   
+
+Figure Labels: Use 8 point Times New Roman for Figure labels. Use words rather than symbols or abbreviations when writing Figure axis labels to avoid confusing the reader. As an example, write the quantity ÒMagnetizationÓ, or ÒMagnetization, MÓ, not just ÒMÓ. If including units in the label, present them within parentheses. Do not label axes only with units. In the example, write ÒMagnetization (A/m)Ó or ÒMagnetization {A[m(1)]}Ó, not just ÒA/mÓ. Do not label axes with a ratio of quantities and units. For example, write ÒTemperature (K)Ó, not ÒTemperature/K.Ó
+
+\section{CONCLUSIONS}
+
+A conclusion section is not required. Although a conclusion may review the main points of the paper, do not replicate the abstract as the conclusion. A conclusion might elaborate on the importance of the work or suggest applications and extensions. 
+
+\addtolength{\textheight}{-12cm}   % This command serves to balance the column lengths
+                                  % on the last page of the document manually. It shortens
+                                  % the textheight of the last page by a suitable amount.
+                                  % This command does not take effect until the next page
+                                  % so it should come on the page before the last. Make
+                                  % sure that you do not shorten the textheight too much.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{APPENDIX}
+
+Appendixes should appear before the acknowledgment.
+
+\section*{ACKNOWLEDGMENT}
+
+The preferred spelling of the word ÒacknowledgmentÓ in America is without an ÒeÓ after the ÒgÓ. Avoid the stilted expression, ÒOne of us (R. B. G.) thanks . . .Ó  Instead, try ÒR. B. G. thanksÓ. Put sponsor acknowledgments in the unnumbered footnote on the first page.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+References are important to the reader; therefore, each citation must be complete and correct. If at all possible, references should be commonly available publications.
+
+
+
+\begin{thebibliography}{99}
+
+\bibitem{c1} Jean-Yves Potvin, Genetic algorithms for the
+traveling salesman problem,
+Centre de Recherche sur les Transports, Université de Montréal,
+C.P. 6128, Succ. Centre-Ville, Montréal, Québec, Canada H3C 3J7 
+
+
+
+
+
+\end{thebibliography}
+
+
+
+
+\end{document}

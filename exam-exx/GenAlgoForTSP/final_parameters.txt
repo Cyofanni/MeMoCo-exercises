@@ -1,0 +1,60 @@
+1) dim. 12
+      WITHOUT SIM. ANN.
+	./main instance_generator/tsp12.dat 200 200 0.2 0 0 66.4
+	  *******BEST solution is: 
+	  0 2 3 4 5 6 9 10 11 8 7 1 0 WITH VALUE: 66.4
+	  WHICH IS: 100% OF THE OPTIMUM
+   	  in 0.232128 seconds (user time) 
+
+      WITH SIM. ANN.
+	./main instance_generator/tsp12.dat 20 60 0.2 1 50 66.4
+	 *******BEST solution is: 
+	  0 1 7 8 11 10 9 6 5 4 3 2 0 WITH VALUE: 66.4
+	  WHICH IS: 100% OF THE OPTIMUM
+	  in 0.019171 seconds (user time)
+ 
+2) dim. 26
+    WITHOUT SIM. ANN:	
+	./main instance_generator/tsp26.dat 700 500 0.2 0 0 937
+	WHICH IS: 97.3319% OF THE OPTIMUM
+	in 4.30311 seconds (user time)
+	in 4.28738 seconds (CPU time)
+   WITH SIM. ANN.
+	./main instance_generator/tsp26.dat 400 200 0.2 1 200 937 
+	WHICH IS: 97.3319% OF THE OPTIMUM
+	in 2.59305 seconds (user time)
+	in 2.53829 seconds (CPU time)
+3) dim. 42
+   WITHOUT SIM. ANN
+       ./main instance_generator/tsp42.dat 1000 500 1 0 0 699
+
+   WITH SIM. ANN.
+       ./main instance_generator/tsp42.dat 500 300 0.2 1 2000 699
+	WHICH IS: 98.7124% OF THE OPTIMUM
+	in 23.9097 seconds (user time)
+	in 23.8899 seconds (CPU time)
+4) dim. 60
+   WITHOUT SIM. ANN.
+	./main instance_generator/tsp60.dat 1500 500 0.2 0 0 629.8
+	WHICH IS: 93.0137% OF THE OPTIMUM
+	in 40.905 seconds (user time)
+	in 40.6854 seconds (CPU time)
+   WITH SIM. ANN.
+	./main instance_generator/tsp60.dat 400 300 0.2 1 5000 629.8
+	WHICH IS: 98.3963% OF THE OPTIMUM
+	in 63.1659 seconds (user time)
+	in 63.1216 seconds (CPU time)
+5) dim. 100
+   WITH SIM. ANN.
+	./main instance_generator/tsp100a.dat 1000 1000 0.2 1 6000 21282
+	WHICH IS: 93.8587% OF THE OPTIMUM
+	in 377.333 seconds (user time)
+	in 376.771 seconds (CPU time)
+
+GRAPHS:
+2 graphs per instance:
+	NB: i valori messi in ordinata vanno ovviamente presi da una media di diverse run
+	1) instance x: in ordinata metto la soluzione migliore trovata, segnando l'ottimo conosciuto:
+	   in ascissa metto varie combinazioni di dimensione popolazione/numero generazioni
+	2) instance x: in ordinata metto il tempo di esecuzione, segnando il tempo di cplex:
+	   in ascissa metto varie combinazioni di dimensione popolazione/numero generazioni  

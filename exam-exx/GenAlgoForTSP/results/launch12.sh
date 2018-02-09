@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DIMPOP=500
-NUMGEN=200
+DIMPOP=300
+NUMGEN=100
 
 function printout {
 	echo "***RESULTS" $1 "Simulated Annealing" >> $5

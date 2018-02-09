@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DIMPOP=500
-NUMGEN=200
+NUMGEN=300
 
 function printout {
 	echo "***RESULTS" $1 "Simulated Annealing" >> $5
@@ -14,7 +14,7 @@ function printout {
         done
 }
 
-#WITHOUT Simulated Annealing
+
 #firstarg: "with" or "without"
 #second and third: simulated annealing parameters
 #fourth: taken from command line, it's the known optimum
@@ -31,3 +31,4 @@ while [  $RUNCOUNTER -lt 7 ]; do
     
     let RUNCOUNTER=RUNCOUNTER+1 
 done
+

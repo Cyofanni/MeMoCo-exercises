@@ -5,6 +5,9 @@
 
 #include <iostream>
 #include <iomanip>
+#include <stdexcept>
+#include <ctime>
+#include <sys/time.h>
 #include "cpxmacro.h"
 #include "TSPSolver.h"
 
@@ -24,6 +27,15 @@ int main (int argc, char const *argv[])
 		TSPSolver tspSolver(env, lp);
 		Data data;
 		data.read(argv[1]);
+
+		/// initialize clocks for running time recording
+		///   two ways:
+		///   1) CPU time (t2 - t1)
+		clock_t t1,t2;
+		t1 = clock();
+		///   2) wall-clock time (tv2 - tv1)
+		struct timeval  tv1, tv2;
+		gettimeofday(&tv1, NULL);
 
 		tspSolver.setupProblem(data);
 
@@ -46,6 +58,14 @@ int main (int argc, char const *argv[])
 		std::cout << std::endl;
 
 		std::cout << "***OPTIMAL OBJECTIVE VALUE***: " << objval << std::endl;
+		
+		
+		/// final clocks
+		t2 = clock();
+		gettimeofday(&tv2, NULL);
+    
+		std::cout << "in " << (double)(tv2.tv_sec+tv2.tv_usec*1e-6 - (tv1.tv_sec+tv1.tv_usec*1e-6)) << " seconds (user time)\n";
+		std::cout << "in " << (double)(t2-t1) / CLOCKS_PER_SEC << " seconds (CPU time)\n";  		
 
 		//debug
 		CHECKED_CPX_CALL(CPXwriteprob, env, lp, "final.lp", NULL);

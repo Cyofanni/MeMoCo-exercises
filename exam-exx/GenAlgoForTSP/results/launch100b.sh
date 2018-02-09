@@ -11,10 +11,10 @@ function printout {
         COUNTER=0
         while [  $COUNTER -lt 4 ]; do
             if [ $1 = "without" ]; then
-             ../main ../instance_generator/tsp100a.dat $DIMPOP $NUMGEN 0.2 $2 $3 $4 >> $5
+             ../main ../instance_generator/tsp100b.dat $DIMPOP $NUMGEN 0.2 $2 $3 $4 >> $5
 
             else
-             ../main ../instance_generator/tsp100a.dat $DIMPOP1 $NUMGEN1 0.2 $2 $3 $4 >> $5
+             ../main ../instance_generator/tsp100b.dat $DIMPOP1 $NUMGEN1 0.2 $2 $3 $4 >> $5
             fi
             printf "\n\n\n" >> $5
             let COUNTER=COUNTER+1

@@ -69,7 +69,7 @@ void TSPPopulation::initPopulation_simAnn(int maxTrials){
 	
 	/* after random initialization, start a simulated annealing for each individual, 
 	   and replace the random individual with the "annealed" one */
-	for (uint i = 0; i < dimPop; i++){    //for each individual	
+	for (uint i = 0; i < dimPop/10.0; i++){    //for each individual	
 		for (uint k = 0; k < maxTrials; k++){
 			// generate a random (2-opt) neighbour	
 			int rand_from = rand() % (population[i].solutionSize()-3) + 1;

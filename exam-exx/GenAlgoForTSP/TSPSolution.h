@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "TSP.h"
+#include <ctime>
 
 /**
 * TSP Solution representation: ordered sequence of nodes (path representation)
@@ -84,26 +85,7 @@ public:
 	  
 	  return same; 
   }
-  
-  /*solution comparator, useful for sorting*/
-  //FIXME: USELESS CODE?
- /* bool operator<(TSPSolution& right){
-	  //I wasn't able to use evaluate because it's defined in TSPSolver
-	  double val_left = 0;
-	  double val_right = 0;
-	  for (uint i = 0; i < this -> sequence.size()-1; i++){
-		int from1 = this -> sequence[i];
-		int to1   = this -> sequence[i+1];
-		int from2 = right.sequence[i];
-		int to2   = right.sequence[i+1];
-		
-		val_left += tsp.cost[from1][to1];
-		val_right += tsp.cost[from1][to1];
-	  }
-	  
-	  return (val_left < val_right); 
-  }*/
-  
+    
   int solutionSize() const{
 	  return sequence.size();
   }
@@ -121,6 +103,7 @@ class TSPSolutionComparator{
 	  bool operator()(const TSPSolution& sol1, const TSPSolution& sol2){
 		  double val_left = 0;
 		  double val_right = 0;
+		  
 		  /*rewrite evalute, because of some conflicts*/
 		  for (uint i = 0; i < sol1.sequence.size()-1; i++){
 		      int from1 = sol1.sequence[i];
@@ -131,8 +114,9 @@ class TSPSolutionComparator{
 			  val_left += tsp.cost[from1][to1];
 		      val_right += tsp.cost[from2][to2];
 	      }
-		
+ 
 		  return (val_left < val_right);   //we are minimizing!
+	  
 	  }
 };
 

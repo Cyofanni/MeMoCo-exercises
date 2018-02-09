@@ -33,6 +33,7 @@ class TSPCrossover{
 	  }
 	  			
 	  std::vector<TSPSolution> generateOffspring(bool& feasible_flag);
+	  std::vector<TSPSolution> generateOffspring_OC();	  
 	  std::vector<TSPSolution> generateOffspringTrials(); //implements Partially-Mapped Crossover	  
 };
 

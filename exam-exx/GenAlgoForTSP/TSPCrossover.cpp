@@ -130,7 +130,84 @@ std::vector<TSPSolution> TSPCrossover::generateOffspring(bool& feasible_flag){  
 	}
 }
 
-/*tries to generate an offspring until a feasible one is obtained*/
+std::vector<TSPSolution> TSPCrossover::generateOffspring_OC(){  //implements Order Crossover
+	std::vector<TSPSolution> ret_offspring;
+	
+	if (parent_1 == parent_2){
+		double rand_val = distr(rg);
+		if (rand_val < mutation_probability){
+			do_mutation(parent_1);
+			do_mutation(parent_2);
+		}
+		ret_offspring.push_back(parent_1);
+	    ret_offspring.push_back(parent_2);
+		
+		return ret_offspring;
+	}
+
+	int sol_size = parent_1.solutionSize();	
+	TSPSolution child_1(parent_2), child_2(parent_1);   //works with Copy Constructor
+	
+	int fst_cut_ind_rnd = (rand() % ((sol_size-2)/2)) + 1;  //index for first cut	
+	int snd_cut_ind_rnd = fst_cut_ind_rnd + (rand() % (sol_size-1-(fst_cut_ind_rnd))); //index for first cut
+	
+	std::vector<int> conflict_zone_1;   //vector against which we check conflicts for child 1
+	std::vector<int> conflict_zone_2;   //vector against which we check conflicts for child 2
+	
+	for (int i = fst_cut_ind_rnd; i < snd_cut_ind_rnd; i++){
+		child_1.sequence[i] = parent_2.sequence[i];
+		child_2.sequence[i] = parent_1.sequence[i];
+		conflict_zone_1.push_back(child_1.sequence[i]);
+		conflict_zone_2.push_back(child_2.sequence[i]);	
+	}
+		
+	/*generate first child_1, which got the internal substring from parent_2
+	  now add cites from parent_1*/
+	std::vector<int>::iterator it_indicator;
+	
+	int child_1_counter = 1;   //position counter, used to skip after second cut
+	int child_2_counter = 1;
+	
+	int conf_zone_size = conflict_zone_1.size();
+	
+	for (int i = 1; i < sol_size - 1; i++){   //loop on parent_1
+		if ((child_1_counter || child_2_counter) >= sol_size-1){
+			break;
+		}
+		
+		if (child_1_counter == fst_cut_ind_rnd){
+			child_1_counter = child_1_counter + conf_zone_size;
+		}
+		if (child_2_counter == fst_cut_ind_rnd){
+			child_2_counter = child_2_counter + conf_zone_size;
+		}
+				
+		it_indicator = std::find(conflict_zone_1.begin(), conflict_zone_1.end(), parent_1.sequence[i]);
+		if (it_indicator == conflict_zone_1.end()){     //if current parent's element hadn't be put in the child
+		   child_1.sequence[child_1_counter] = parent_1.sequence[i];    //in this case we can insert the parent value in the corresponding child, at the same position
+		   child_1_counter++;
+		}
+		
+		it_indicator = std::find(conflict_zone_2.begin(), conflict_zone_2.end(), parent_2.sequence[i]);
+		if (it_indicator == conflict_zone_2.end()){     //if current parent's element hadn't be put in the child
+		   child_2.sequence[child_2_counter] = parent_2.sequence[i];    //in this case we can insert the parent value in the corresponding child, at the same position
+		   child_2_counter++;		
+		}		
+	}
+	
+	double rand_val = distr(rg);
+	if (rand_val < mutation_probability){
+		do_mutation(child_1);
+		do_mutation(child_2);
+    }
+    	
+    ret_offspring.push_back(child_1);
+	ret_offspring.push_back(child_2);
+		
+	return ret_offspring;
+}
+
+/*tries to generate an offspring until a feasible one is obtained (only for PMX)*/
 std::vector<TSPSolution> TSPCrossover::generateOffspringTrials(){
 	bool feasible_obtained = false;
 	std::vector<TSPSolution> ret_offspring;

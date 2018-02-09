@@ -50,7 +50,7 @@ public:
   bool initRnd (TSPSolution& sol) {
     //srand(time(NULL));  //seems to be the wrong place by debugging
     for (uint i = 1; i < sol.sequence.size(); ++i ) {
-      // initial and final position are fixed (initial/final node remains 0)
+     // initial and final position are fixed (initial/final node remains 0)
       int idx1 = rand() % (sol.sequence.size()-2) + 1;
       int idx2 = rand() % (sol.sequence.size()-2) + 1;
       int tmp = sol.sequence[idx1];

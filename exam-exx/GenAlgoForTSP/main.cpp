@@ -54,11 +54,8 @@ int main (int argc, char const *argv[])
     ///   2) wall-clock time (tv2 - tv1)
     struct timeval  tv1, tv2;
     gettimeofday(&tv1, NULL);
-    
-    /*TSPGeneticRunner(TSP tsp, int population_size, uint max_iter_n,  
-								   double mut_prob, uint sim_ann_max_iter,
-								   bool choose_init, rg, distr)*/			
-	TSPGeneticRunner exec(tspInstance, pop_size, n_of_generations, mut_prob,
+        
+    TSPGeneticRunner exec(tspInstance, pop_size, n_of_generations, mut_prob,
 											random_or_simanneal, sim_ann_max_iter,
 											generator, distribution);
 	TSPSolution bestSolution = exec.run();

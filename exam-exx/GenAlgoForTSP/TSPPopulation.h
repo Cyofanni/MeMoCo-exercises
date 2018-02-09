@@ -31,7 +31,8 @@ class TSPPopulation{
 							 const std::uniform_real_distribution<double>& distr, double mut_prob);
 							 
 		void set_dimPop(int dim);		
-		int get_dimPop();		
+		int get_dimPop();
+		void set_mutProb(double mp);				
 					 
 		void initPopulation_random();
 		void initPopulation_simAnn(int maxTrials);    //initialize with Simulated Annealing (thus 'max trials')

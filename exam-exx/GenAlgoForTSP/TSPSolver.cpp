@@ -18,8 +18,8 @@ bool TSPSolver::solve ( const TSP& tsp , const TSPSolution& initSol , TSPSolutio
     double bestValue, currValue;
     bestValue = currValue = evaluate(currSol,tsp);
     TSPMove move;
-    while ( ! stop ) {
-      if ( tsp.n < 20 ) currSol.print(); //log current solution (only small instances)
+    while (!stop) {
+      if (tsp.n < 20) currSol.print(); //log current solution (only small instances)
       std::cout << " (" << ++iter << ") value " << currValue << " (" << evaluate(currSol,tsp) << ")";
       double bestNeighValue = currValue + findBestNeighbor(tsp,currSol,move);
       ///incremental evaluation: findBestNeighbour returns the cost increment

@@ -23,10 +23,10 @@ TSPSolution TSPGeneticRunner::run(){
 		init_population.initPopulation_simAnn(sim_ann_max_iter);
 	}
 	
-	std::vector<TSPSolution> get_pop = init_population.getPopulation();
+	//std::vector<TSPSolution> get_pop = init_population.getPopulation();
 			
 	int generation = 0;
-	int num_couples_pergeneration = floor(population_size / 3.0);
+	int num_couples_pergeneration = floor(population_size / 4.0);
 	TSPSolution bestGeneralSolution(tsp);   //best solution overall
 	std::vector<TSPSolution> bestSolutions;  //vector containing the best solution for each generation
 		
@@ -34,12 +34,26 @@ TSPSolution TSPGeneticRunner::run(){
 	curr_population.copyPop(init_population);	 //copy initial to current
 	
 	
+	int no_improv_counter = 0;
+	TSPSolution bestSolCurrGen(tsp);
+	double old_bestSolValue;
+		
 				
 	/*main loop through generations*/
-	while(generation < max_iter_n){	
+	while(generation < max_iter_n){		
 		if (curr_population.get_dimPop() < 2){
 			break;
 		}
+		if (no_improv_counter >= ceil(max_iter_n/10.0) && (generation >= (max_iter_n/3))){
+			break;
+		}
+		
+		if (generation > 95*max_iter_n/100){
+			curr_population.set_mutProb(mut_prob*3);
+		}
+		
+		//TSPSolution old_bestSolCurrGen;
+		//old_bestSolCurrGen = bestSolCurrGen;
 		
 		std::vector<TSPSolution> curr_offspring;    //total offspring of current generation
 		
@@ -49,15 +63,27 @@ TSPSolution TSPGeneticRunner::run(){
 		for (int couple_counter = 0; couple_counter < num_couples_pergeneration; couple_counter++){
 			std::vector<TSPSolution> curr_couple = curr_population.selectPairNT(); //select from current population	
 			TSPCrossover cross_over(curr_couple[0], curr_couple[1], mut_prob, rg, distr);
-			std::vector<TSPSolution> curr_oneoffspr = cross_over.generateOffspringTrials();  //current selected couple's offspring
+			std::vector<TSPSolution> curr_oneoffspr = cross_over.generateOffspring_OC();  //current selected couple's offspring
 			curr_offspring.push_back(curr_oneoffspr[0]);   //add to current generation's offspring
 			curr_offspring.push_back(curr_oneoffspr[1]);
 		}
 		
-		TSPSolution bestSolCurrGen = curr_population.replacePopulation(curr_offspring);  //replace and get best solution for current generation+offspring
+		
+		bestSolCurrGen = curr_population.replacePopulation(curr_offspring);  //replace and get best solution for current generation+offspring
+		
+		if (old_bestSolValue == TSPSolver::evaluate(bestSolCurrGen, tsp)){
+			no_improv_counter++;
+		}
+		else{
+			no_improv_counter = 0;
+		}
+				
+		old_bestSolValue = TSPSolver::evaluate(bestSolCurrGen, tsp);
+		//std::cout << old_bestSolValue << std::endl;
 		//after replacePopulation, curr_population is new -> evolution
 		
-		get_pop = curr_population.getPopulation();
+		
+		/*get_pop = curr_population.getPopulation();
 		std::cout << "GENERATION " << generation << "'s" << " CURRENT POPULATION AFTER CROSSOVER AND REPLACEMENT: " << std::endl;	
 		for (int i = 0; i < get_pop.size(); i++){
 			if (i%10 == 0 || i == 0 || i == 1 || i == 5){
@@ -68,14 +94,14 @@ TSPSolution TSPGeneticRunner::run(){
 			}
 		}
 		std::cout << std::endl;	
-		std::cout << std::endl;	
+		std::cout << std::endl;*/
 		
 		bestSolutions.push_back(bestSolCurrGen);			
 		generation++;
     }
     
     //loop to get best solution
-    TSPSolution bestSol = bestSolutions[0];
+    TSPSolution bestSol = bestSolutions[bestSolutions.size()-1];
     for (int gen = 0; gen < bestSolutions.size(); gen++){
 		if (TSPSolver::evaluate(bestSolutions[gen], tsp) < TSPSolver::evaluate(bestSol, tsp)){  //we are minimizing
 			bestSol = bestSolutions[gen];

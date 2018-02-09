@@ -38,7 +38,11 @@ void TSPPopulation::set_dimPop(int dim){
 
 int TSPPopulation::get_dimPop(){
 	return dimPop;
-}		
+}
+
+void TSPPopulation::set_mutProb(double mp){
+	mut_prob = mp;
+}
 
 void TSPPopulation::initPopulation_random(){   // generate an initial random population
 	for (int i = 0; i < dimPop; i++){
@@ -91,7 +95,7 @@ void TSPPopulation::initPopulation_simAnn(int maxTrials){
 				}
 				
 				probability = probability * 100;    //easier to deal with percents    
-				int prob_indicator = rand() % 101;		
+				int prob_indicator = distr(rg);		
 				if (prob_indicator < probability){      //replace current solution with the computed given probability value				
 					population[i] = neighbourSol;
 				}				
@@ -171,14 +175,34 @@ std::vector<TSPSolution> TSPPopulation::selectPairNT(){   //n-tournament
 	TSPSolution best_parent_1 = population[0];
 	TSPSolution best_parent_2 = population[1];	
 	
-	double total_fitness = total_pop_fitness();
+	//double total_fitness = total_pop_fitness();
 		
 	double prob = 20;    //add to small set with probability = prob
 	
-	int count_chosen = 0;	
-	for (int i = 0; i < dimPop; i++){	
+	int step = 2;
+	int count_thresh1 = 0;
+	int count_thresh2 = 0;
+	
+	for (int i = 0; i < dimPop; i+=step){
+		if (count_thresh1 <= 1 && i >= dimPop/2 && i < 2*dimPop/3){
+			count_thresh1++;
+			if (count_thresh1 == 1){
+				step = 3;
+			}
+		}
+		if (count_thresh2 <= 1 && i >= 2*dimPop/3){
+			count_thresh2++;
+			if (count_thresh2 == 1){
+				step = 4;
+			}
+		}
+					
 		double rand_val = distr(rg);
-		if (rand_val < prob){
+		if (population[i].selectedForMating == 0 && (rand_val < prob)){
+			small_set.push_back(population[i]);
+			population[i].selectedForMating = 1;
+		}
+		else if (population[i].selectedForMating == 1 && (rand_val < prob/2.0)){
 			small_set.push_back(population[i]);
 		}
 		
@@ -186,14 +210,23 @@ std::vector<TSPSolution> TSPPopulation::selectPairNT(){   //n-tournament
 		if (rand_mut < mut_prob){
 			TSPCrossover::do_mutation(population[i]);
 		}
+		/*if (i >= 90*dimPop/100){
+			if (rand_mut < mut_prob*2){
+				TSPCrossover::do_mutation(population[i]);
+			}
+		}*/
+		//prob = 99*prob/100;
 	}
 	
-	TSPSolutionComparator tsp_sol_comp;
+	/*TSPSolutionComparator tsp_sol_comp;
 	tsp_sol_comp.set_tsp(tsp);
-	std::sort(small_set.begin(), small_set.end(), tsp_sol_comp);
+	std::sort(small_set.begin(), small_set.end(), tsp_sol_comp);*/
 	
 	int parent_index = 0;
 	for (int i = 0; i < small_set.size(); i++){
+		if (parent_index == 2){
+			break;
+		}
 		double rand_val = distr(rg);
 		if (rand_val < prob){
 			if (parent_index == 0){
@@ -223,18 +256,25 @@ TSPSolution TSPPopulation::replacePopulation(std::vector<TSPSolution> offspring)
 	std::sort(population.begin(), population.end(), tsp_sol_comp);   //sort them in descending order (ascending according to value, we are minimizing)
 	TSPSolution best = population[0];
 	//discard the items past the nth (dim_pop)
-	for (int i = 5; i < dimPop; i++){    //leave the first 1/nth best
-		double swap_prob = 10.0;       //probability of swapping
+	/*for (int i = 5; i < dimPop; i+=2){    //leave the first 1/nth best
+		double swap_prob = 1.0;       //probability of swapping
 		double randv = distr(rg); 
 		if (randv < swap_prob){
 			//include some lower fitness(higher value) solutions after dimPop, to improve diversification
 			int rand_index = dimPop + 1 + rand() % (offspring.size()-2);
 			population[i] = population[rand_index];
 		}
-	}
-
-	this -> set_dimPop(ceil(99*dimPop/100));
-	population.resize(dimPop);	
+	}*/
+	/*if (tsp.n >= 90){
+		this -> set_dimPop(ceil(94*dimPop/100));
+	}*/
+	//else{
+		this -> set_dimPop(ceil(97*dimPop/100));
+	//}
+	population.resize(dimPop);
+	for (int i = 0; i < dimPop; i+=1){
+		population[i].selectedForMating = 0;
+	}	
 	
 	return best;
 }

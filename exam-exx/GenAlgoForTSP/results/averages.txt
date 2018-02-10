@@ -1,0 +1,31 @@
+1) dim. 12
+     POP_SIZE = 300 (fixed)
+     10 generations: 97.3275%, 0.076s
+     20 generations: 97.2125%, 0.13s
+     100 generations: 100%, 0.36s
+########################################
+2) dim. 26
+     POP_SIZE = 500
+     100 generations: 95.86%, 2.17s
+     200 generations: 95.40, 2.24s
+     300 generations: 99,32, 2.27s
+3) dim. 42
+    ** NO SIMULATED ANNEALING
+       POP_SIZE = 800
+	100 generations: 90.24%, 8.08s
+	200 generations: 91.08%, 9.22s
+	300 generations: 95.95%, 9.18s
+
+    ** SIMULATED ANNEALING
+       POP_SIZE = 500, SIM_ANN_ITERATIONS = 1000
+	100 generations: 90.9%, 5.01s
+	200 generations: 93.25%, 5.18s
+	300 generations: 97.51, 5.56
+################################################
+4) dim 100a
+    ** SIMULATED ANNEALING:
+	POP_SIZE = 1000, SIM_ANN_ITERATIONS = 6000
+	100 generations: 87.44%, 87.23s
+	300 generations: 87.79%, 91.3s
+	500 generations: 90.9%, 90s
+		

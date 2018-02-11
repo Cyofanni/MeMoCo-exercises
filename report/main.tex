@@ -26,6 +26,7 @@
 \usepackage{listings}  % assumes amsmath package installed
 \usepackage{caption}
 \usepackage{subfigure}
+\usepackage[utf8]{inputenc}
 
 \title{\LARGE \bf
 \hspace*{ 0.5 in}Comparing exact and heuristic methods for the  \newline Electronic Board Drilling-Traveling Salesperson problem
@@ -78,16 +79,16 @@ Implementation issues and evaluation outcomes will be included as well.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{INTRODUCTION}
 \subsection{The problem}
-This assignment comes from a real world situation: \newline \textit{a company produces boards with holes used to build electric frames. Boards are positioned over a machine and a drill moves over them, stopping at some desired positions
+This assignment comes from a real-world scenario: \newline \textit{a company produces boards with holes used to build electric frames. Boards are positioned over a machine and a drill moves over them, stopping at some desired positions
 and drilling holes. Given the holes' positions on the board, we are supposed to determine the sequence of holes that minimises the total drilling time, taking into account
-that the time required for making an hole is a constant.} \newline 
+that the time required for making a hole is constant.} \newline 
 This description's similarity to the more famous \textit{Traveling Salesperson problem} is noteworthy: actually,
 they can be thought of as the same problem.
 \subsection{The project} 
 As the title suggests, our work is made up of two main parts:
 \begin{itemize}
-\item the first part comprises a C++ tiny program that utilises \textit{CPLEX}, a popular optimisation software which offers a library for this very language;
-\item the second part is made up of a quite larger program implementing a \textit{Genetic algorithm}. 
+\item the first part comprises a tiny C++ program that utilises \textit{CPLEX}, a popular optimisation software which offers a library for this very language;
+\item the second part is made up of a quite larger program implementing a \textit{Genetic Algorithm}. 
 \end{itemize}
 
 \section{Using \textit{CPLEX} to obtain an optimal solution}
@@ -117,7 +118,7 @@ for (int i = 0; i < data.n; i++){
     NULL, NULL);
 }
 \end{lstlisting} 
-With respect to variables and respective coefficients, we resorted to plain STL 
+With respect to variables and corresponding coefficients, we resorted to plain STL 
 \textit{vectors}. As regards variables' ordering, we arbitrarily put the \textit{y}'s before the \textit{x}'s; note that we must take this priority into account for the sake of a correct access to variables and coefficients. Listing 2
 shows a sort of "preamble" which is quite common before any constraint.
 \begin{lstlisting}[caption={Important data structure declarations}]
@@ -125,11 +126,11 @@ const int x_init_index = data.n*data.n;
 std::vector<int> idx(data.n);
 std::vector<double> coefs(data.n);
 \end{lstlisting}
-In the above code extract \texttt{x\_init\_index} represents the index where
+In the above code extract, \texttt{x\_init\_index} represents the index where
 the \textit{x} variables start from: it is equal to the square of the problem's size due to the fact that every \textit{y} has two indices. The second line declares a vector, \texttt{idx} (whose size corresponds to the problem's dimension), which will store all the variables the following constraint will make use of. On the other hand, \texttt{coefs} will store the coefficients related to the variables in question.
 
 \subsection{Outcomes: reached optima and execution times}
-In order to evaluate this first part, we generated some reference random instances (which will be used by the second part as well) our program can be run against. \newline Table 1  gives insight into this program's efficiency and effectiveness.
+In order to evaluate this first part, we used some reference random instances (which will be used by the second part as well) our program can be run against. \newline Table 1  gives insight into this program's efficiency and effectiveness.
 \begin{table}[h]
 \caption{Results for the first part}
 \label{table_example}
@@ -166,7 +167,7 @@ which should be able to yield approximate yet good solutions. A general method a
 \subsection{Generic steps} 
 A traditional Genetic Algorithm for optimisation problems can be summarised as follows:
 \begin{enumerate}
-\item devise a suitable \textbf{encoding} for solutions(a.k.a. \underline{individuals}, hereafter there words will be interchangeable);
+\item devise a suitable \textbf{encoding} for solutions (a.k.a. \underline{individuals}, hereafter there words will be interchangeable);
 \item generate an initial \textbf{population}, i.e., a set of solutions;
 \item \texttt{Loop}:
 \item \hspace*{ 0.2 mm} \underline{select} couples (or groups) of \textbf{parent} solutions;
@@ -208,23 +209,23 @@ if (k == temp_thresh_1){
 \subsection{Selecting individuals for mating}
 First of all, we should choose whether we want to perform mating on pairs
 or larger-sized groups of individuals. We decided to implement the former option due to its simplicity and overall effectiveness. \newline
-Plenty of selection criteria have been proposed in the literature: our choice fell on \textit{Tournament selection}, whose pseudocode is given below: \newline\newline
+Plenty of selection criteria have been proposed in the literature: our choice fell on \textit{Tournament Selection}, whose pseudocode is given below: \newline\newline
 \texttt{\textit{First step}: choose k individuals from the population at random
 \newline \textit{Second step}: choose the best individual from the 
 tournament with probability p
 \newline \textit{Third step}: choose the second best individual 
 with probability $p*(1-p)$
 \newline \textit{N-th step}: choose the n-th best individual 
-with probability $p\times((1-p)^(n-2))$}
+with probability $p\times((1-p)^{(n-2)})$}
 \newline\newline
-It can be shown that this strategy does not suffer from any bias towards "super-individuals" (that is, individuals endowed with better fitness), since it is easy to realize its independence from individuals' fitness values.
+It can be shown that this strategy does not suffer from any bias towards "super-individuals" (that is, individuals endowed with better fitness), since it is easy to realise its independence from individuals' fitness values.
 
 
 \subsection{Recombining individuals through Crossover}
 As far as descendants' generation is concerned, we know we can carry it out thanks to various kinds of \textit{Crossover operators}. Generally speaking, we
-could think of Crossover as a way to include a combination of the parents' features into a child. As we have seen in the context of selection, there are lots of proposed operators in this context as well, which may vary in cost and
+could think of Crossover as a way to include a combination of parents' features into a child. As we have seen in the context of selection, there are lots of proposed operators here as well, which may vary in cost and
 effectiveness. The latter requirement matters particularly in the setting we are working on: in fact, any operator that generates an offspring without being concerned about its feasibility would not be deemed as much effective.
-We wrote the code both for \textit{Partially-Mapped Crossover} and \textit{Order Crossover} (Oliver et al., Goldberg)), but since the former operator does not enforce feasibility, we are more amenable to go through the latter's steps, which are listed below:
+We wrote the code both for \textit{Partially-Mapped Crossover} (Goldberg and Lingle) and \textit{Order Crossover} (Oliver et al., Goldberg)), but since the former operator does not enforce feasibility, we are more amenable to go through the latter's steps, which are listed below:
 \begin{enumerate}
 \item randomly select a substring from a parent;
 \item produce a proto-child by copying the substring into the
@@ -251,8 +252,8 @@ for (int i = 1; i < sol_size - 1; i++){
 \end{lstlisting}
 
 \subsection{Generational replacement}
-One of the components needed by evolution is \textit{generational replacement}. With lack of any sensible replacement, evolution would get stuck to inadequate individuals. \newline 
-The kind of strategy we adopted is called \textit{Best individuals replacement}. The aspect that drove us toward this method was its clear general description, which can be summarised straightforwardly with this sentence: \newline
+One of the components needed by evolution is \textit{Generational Replacement}. With lack of any sensible replacement, evolution would get stuck to inadequate individuals. \newline 
+The kind of strategy we adopted is called \textit{Best Individuals Replacement}. The aspect that drove us toward this method was its clear general description, which can be summarised straightforwardly with this sentence: \newline
 \textit{generate \textbf{R} new individuals from \textbf{N} old ones, then keep the best \textbf{N} among the total \textbf{N + R}}. \newline
 We achieved this method's goal by means of plain vector concatenation and sorting. In particular, the concatenation consists in appending the current offspring to the current population (which are both represented with vectors). The resulting vector is then sorted using an appropriate comparator. Efficiency reasons forced us to dispose of the worst 3\% of the resulting vector; this trick let us save up to minutes of computation time. Thus, the outcomes we will talk about will always refer to runs that take advantage of the trick mentioned above.
 \begin{lstlisting}[caption={Best individual replacement, in \texttt{TSPPopulation.cpp}}]
@@ -267,10 +268,10 @@ TSPSolution repPop(vector offspring){
 
 
 \subsection{Exploiting mutation to avoid premature convergence}
-It is well known that lack of \textit{mutation} occurrence would make our algorithm doomed to be characterized by poor diversification. As a matter of fact, \textit{diversification} becomes necessary in order to escape from premature convergence, that is to say, ending up with a population made up of excessively similar individuals (\textit{genetic drift}) \newline
-Therefore we are forced to introduce mutations, which obviously should occur seldom enough. Thanks to much painstaking tuning and testing, we found out that a fixed 0.2\% mutation probability (then multiplied by three during the very last 5\% of total generations) drives to decent results (hereafter we will stick to this value). \newline
+It is well known that lack of \textit{mutation} occurrence would make our algorithm doomed to be characterized by poor diversification. As a matter of fact, \textit{diversification} becomes necessary in order to escape from premature convergence, that is to say, ending up with a population made up of excessively similar individuals (\textit{genetic drift}). \newline
+Therefore we are forced to introduce mutations, which obviously should occur seldom enough. Thanks to much painstaking tuning and testing, we found out that a fixed 0.2\% mutation probability (then multiplied by three during the very last 5\% of total generations) drives to decent results. Thus, hereafter we will stick to this value. \newline
 As in the case with other genetic steps, there are many ways to perform mutation on an individual. Trial and error led us to choose \textit{2-opt} moves (namely, reversal of random substrings); however, our first choice consisted in performing random swaps between couples of holes (with very poor results which will not be reported). \newline
-At last, it is worthwhile to mention that mutations could occur both on the initial population (i.e. "initial" is referred to a particular generation) and on its offspring.
+At last, it is worthwhile to mention that mutations could occur both on the initial population ("initial" is referred to a specific generation) and on its offspring.
 \begin{lstlisting}[caption={2-opt move, in \texttt{TSPCrossover.h}}]
 void doMutation(TSPSolution& individual){
  TSPSolution tmpSol(individual);
@@ -281,15 +282,15 @@ void doMutation(TSPSolution& individual){
 \end{lstlisting}
 
 \section{Outcome analysis}
-In this section we will focus on outcomes and data representation. In the last section of the paper, called \textit{Plots}, we will show one or two graphs per instance, whose aim is to show how quality and running time vary depending on the number of generations, given a fixed chosen number of individuals for each instance. Medium-sized instances have been attacked using both pure randomness and some local search in initialisation. On the other hand, bigger instances have been attacked only by means of smart initialisation. \newline 
-We remark on the fact that all the plotted data come from \textit{averages}, that is, the program has been run several time
+In this section we will focus on outcomes and data representation. In the last section of the paper, called \textit{Plots}, we will show two graphs per instance, whose aim is to show how quality and running time vary depending on the number of generations, given a fixed chosen number of individuals. Medium-sized instances have been attacked using both pure randomness and some local search in initialisation. On the other hand, bigger instances have been attacked only by means of smart initialisation. \newline 
+We remark on the fact that all the plotted data come from \textit{averages}, that is, the program has been run several times
 after fixing some parameters and then an average of the results has been calculated. Further details about testing can be found in the appendix titled \textit{Practical Notes}. \newline
 The analysed instances are exactly the same as the ones that
 have been discussed in the first part of the paper. \newline
 From now on, we proceed with a thorough analysis of the graphs.
 \subsubsection{Small instances} fig. a), b), c), and d) show
 the average outcomes for two specific $12\times12$ and $26\times26$ instances. Figures show evident quality improvements as long as the number of generations increases, with some exceptions that are due to (we believe) the stochastic nature of genetic algorithms. Up to now, running time is not an issue.
-\subsubsection{Medium-sized instances} figures e) and f) come from a more complex background: this $42\times42$ instance has been tested both with and without Simulated Annealing. Thus, two lines have been plotted. Using Simulated Annealing (1000 iterations) to initialise even a small fraction of the starting population gave us remarkable improvements, even though with a reduced population size. In fact, the 800-individual population was tested without Simulated Annealing, whereas the 500-individual one did take advantage of it.
+\subsubsection{Medium-sized instances} figures e) and f) come from a more complex background: this $42\times42$ instance has been tested both with and without Simulated Annealing. Thus, two lines have been plotted. Using Simulated Annealing (1000 iterations) to initialise even a small fraction of the starting population gave us remarkable improvements, notwithstanding a reduced population size. In fact, the 800-individual population was tested without Simulated Annealing, whereas the 500-individual one did take advantage of it.
 \subsubsection{Large instances} figures g) and h) refer to the instance that had been named \textit{100a} in the first part.
 Here we plotted only the results coming from a Simulated Annealing initialisation (6000 iterations), because its absence 
 provided us with very poor results. These plots show that quality 
@@ -297,7 +298,7 @@ and running time start to become an issue.
 \newline
 A table with quality variances for some instances is given below:
 \begin{table}[h]
-\caption{Results for the first part}
+\caption{Quality variance on different instances}
 \label{table_example}
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|}
@@ -319,8 +320,8 @@ A table with quality variances for some instances is given below:
 \end{table}
 
 \section{CONCLUSIONS}
-This practical work on combinatorial problems allowed us to grasp many fundamental concepts. First of all, we realized that exact methods do not always manage to give good solutions in an acceptable amount of time. Seeing the striking surge in running time beyond instances with 60 holes has been interesting as well. \newline 
-As far as genetic algorithms are concerned, the results for smaller instances have been excellent both in term of quality and computation time. On the other hand, bigger instances required much more time to approach the optimum. Initialising some individuals by way of Simulated Annealing gave us a dramatic improvement for these instances. 
+This practical work on combinatorial problems allowed us to grasp many fundamental concepts. First of all, we realised that exact methods do not always manage to give good solutions in an acceptable amount of time. Seeing the striking surge in running time beyond instances with 60 holes has been interesting as well. \newline 
+As far as genetic algorithms are concerned, the results for smaller instances have been excellent both in term of quality and computation time. On the other hand, bigger instances required much more time to approach the optimum. Initialising some individuals by way of Simulated Annealing gave us a dramatic improvement for these instances. \newline However, we should always be aware of the fact that these heuristics give no optimality guarantee.
 
 
 \addtolength{\textheight}{-12cm}   % This command serves to balance the column lengths
@@ -342,15 +343,25 @@ As far as genetic algorithms are concerned, the results for smaller instances ha
 \section*{Practical notes}
 Here the reader can find some important information regarding 
 compilation and execution of the software.
-\begin{enumerate} 
-\item \textbf{Compilation and execution}: compilation should be as easy as running \texttt{make} in the project's root folder from the command line.\newline 
-In order to get some hints on how to run the program, launch \texttt{./main} from the same directory; anyway, we have provided you with some handy scripts which will be discussed below.
-\item \textbf{Instances}: the directory called \texttt{instance\_generator} contains some instances we found in \textit{TSPLIB}, a library of sample instances for well-known combinatorial problems.
-\item \textbf{Testing}: some \textit{shell scripts} are present under the directory named \texttt{results}. There exists a script named \texttt{launchX.sh} (where \textit{X} is the instance's size) for each instance. In order to run them, you are obliged to give them the execution permission running following command: \texttt{chmod +x script\_name}. \newline
+
+\subsubsection{First part}
+\renewcommand{\labelitemi}{$\star$}
+\begin{itemize} 
+\item \textbf{Compilation and execution}: run \texttt{make} in the folder called \textit{tsp-drill}, then launch \textit{./main instance\_file\_name}
+from the same place. Instances can be found under \textit{GenAlgoForTSP/instance\_generator}.
+\end{itemize}
+
+\subsubsection{Second part}
+\renewcommand{\labelitemi}{$\star$}
+\begin{itemize} 
+\item \textbf{Compilation and execution}: compilation should be as easy as running \textit{make} in the folder called \textit{GenAlgoForTSP}.\newline 
+In order to get some hints on how to run the program, launch \textit{./main} from the same directory; anyway, we have provided you with some handy scripts which will be discussed below.
+\item \textbf{Instances}: the directory named \textit{instance\_generator} contains some instances we found in \textit{TSPLIB}, a library of sample instances for well-known combinatorial problems.
+\item \textbf{Testing}: some \textit{shell scripts} are present under the directory named \texttt{results}. There exists a script named \textit{launchX.sh} (where \textit{X} is the instance's size) for each instance. In order to run them, you are obliged to give them execution permissions running the following command: \textit{chmod +x script\_name}. \newline
 These scripts accept two parameters from the command line: first, they require the problem's known optimum, then the name of an output file which will store their output. \newline We decided to leave some parameters such as \textit{population's size} and \textit{number of generations} hard-coded. \newline
 After receiving all the data, these scripts run our program  several times (up to 49 for smaller instances, whereas we stopped to 30 for the bigger ones), so that we can calculate statistical parameters (such as mean and variance) afterwards.
 This large amount of testing is required since the algorithms' behaviour is stochastic in nature.
-\end{enumerate}
+\end{itemize}
 
 \section*{Plots}
 Some plots (along with understandable captions) are provided in the next pages.
@@ -415,7 +426,7 @@ Some plots (along with understandable captions) are provided in the next pages.
 \clearpage 
 \begin{thebibliography}{99}
 \bibitem{c1} Jean-Yves Potvin, Genetic algorithms for the
-traveling salesman problem,
+Traveling Salesman Problem,
 Centre de Recherche sur les Transports, Université de Montréal,
 C.P. 6128, Succ. Centre-Ville, Montréal, Québec, Canada H3C 3J7 
 \end{thebibliography}

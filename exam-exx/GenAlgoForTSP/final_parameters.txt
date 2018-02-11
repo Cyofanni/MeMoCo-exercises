@@ -126,6 +126,6 @@ GRAPHS:
 2 graphs per instance:
 	NB: i valori messi in ordinata vanno ovviamente presi da una media di diverse run
 	1) instance x: in ordinata metto la soluzione migliore trovata, segnando l'ottimo conosciuto:
-	   in ascissa metto varie combinazioni di dimensione popolazione/numero generazioni
+	   in ascissa metto il numero di generazioni (la popolazione viene scelta fissa)  
 	2) instance x: in ordinata metto il tempo di esecuzione, segnando il tempo di cplex:
-	   in ascissa metto varie combinazioni di dimensione popolazione/numero generazioni  
+	   in ascissa metto il numero di generazioni (la popolazione viene scelta fissa)  

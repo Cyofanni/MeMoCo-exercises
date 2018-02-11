@@ -42,7 +42,7 @@ bool TSPSolver::solve ( const TSP& tsp , const TSPSolution& initSol , TSPSolutio
   return true;
 }
 
-TSPSolution& TSPSolver::swap (TSPSolution& tspSol, const TSPMove& move) 
+TSPSolution& TSPSolver::swap (TSPSolution& tspSol, const TSPMove& move)
 {
   TSPSolution tmpSol(tspSol);
   for ( int i = move.from ; i <= move.to ; ++i ) {
@@ -61,7 +61,7 @@ double TSPSolver::findBestNeighbor (const TSP& tsp, const TSPSolution& currSol ,
 
   /// TODO FROM HERE...
   // you don't need to create all the neighbour solutions, just evaluate them
- 
+
   /// ...TO HERE
   return bestCostVariation;
 }

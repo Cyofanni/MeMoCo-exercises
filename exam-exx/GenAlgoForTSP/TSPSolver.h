@@ -60,11 +60,11 @@ public:
    // std::cout << "### "; sol.print(); std::cout << " ###" << std::endl;
     return true;
   }
-  
-  
-  
-  
-  
+
+
+
+
+
   /**
    * search for a good tour by neighbourhood search
    * @param TSP TSP data

@@ -45,7 +45,7 @@ RUNCOUNTER=0
 while [  $RUNCOUNTER -lt 7 ]; do
     echo "RESULTS FROM RUN $RUNCOUNTER" >> $2
     printf "\n" >> $2
-    printout "without" 1 4000 $1 $2
+    printout "with" 1 4000 $1 $2
     echo "#####################################################" >> $2
     printf "\n" >> $2
 

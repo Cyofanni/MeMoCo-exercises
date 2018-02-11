@@ -1,0 +1,214 @@
+BEGIN OF FILE
+RESULTS FROM RUN 0
+
+***RESULTS with Simulated Annealing
+
+
+number of nodes n = 100
+population size: 1000
+number of generations: 500
+mutation probability: 0.2
+simulated annealing?: 1
+simulated annealing max iterations: 6000
+
+
+*******BEST solution is: 
+0 89 20 45 24 8 70 26 60 34 93 33 71 36 53 57 83 6 56 73 59 86 65 3 88 42 51 49 76 15 41 13 63 82 5 14 32 81 50 47 30 62 12 1 77 16 44 35 40 43 18 91 95 17 23 54 21 22 87 46 80 78 64 74 55 99 25 4 61 68 29 79 19 37 48 85 9 67 39 66 38 69 52 72 84 92 10 2 27 90 96 75 98 7 28 58 31 97 11 94 0 WITH VALUE: 25052
+WHICH IS: 86.8524% OF THE OPTIMUM
+in 92.9646 seconds (user time)
+in 92.6929 seconds (CPU time)
+
+
+
+number of nodes n = 100
+population size: 1000
+number of generations: 500
+mutation probability: 0.2
+simulated annealing?: 1
+simulated annealing max iterations: 6000
+
+
+*******BEST solution is: 
+0 11 97 94 2 28 31 58 75 7 98 96 90 27 10 92 84 72 9 52 69 38 39 66 4 61 25 99 55 80 78 46 64 36 71 6 83 57 51 53 87 22 21 54 49 76 23 17 95 91 18 43 40 16 35 44 15 1 77 12 41 63 13 88 42 59 86 82 32 50 47 30 62 81 14 5 3 65 73 56 93 33 26 34 60 70 8 24 45 37 19 79 29 74 68 48 85 67 20 89 0 WITH VALUE: 25346
+WHICH IS: 85.5246% OF THE OPTIMUM
+in 102.499 seconds (user time)
+in 101.576 seconds (CPU time)
+
+
+
+number of nodes n = 100
+population size: 1000
+number of generations: 500
+mutation probability: 0.2
+simulated annealing?: 1
+simulated annealing max iterations: 6000
+
+
+*******BEST solution is: 
+0 89 45 8 24 71 33 56 6 83 57 51 53 87 22 21 54 23 17 44 35 95 91 18 43 40 16 15 76 49 42 88 59 86 82 13 63 81 41 1 77 12 62 30 47 50 14 32 5 3 65 73 93 26 60 34 70 11 94 97 31 28 58 75 98 7 96 90 27 2 10 92 84 72 52 9 67 39 38 69 66 4 61 99 78 64 36 46 80 55 25 68 74 29 37 19 79 48 85 20 0 WITH VALUE: 25250
+WHICH IS: 85.9582% OF THE OPTIMUM
+in 96.8966 seconds (user time)
+in 96.4691 seconds (CPU time)
+
+
+
+number of nodes n = 100
+population size: 1000
+number of generations: 500
+mutation probability: 0.2
+simulated annealing?: 1
+simulated annealing max iterations: 6000
+
+
+*******BEST solution is: 
+0 94 11 45 24 8 33 56 93 6 83 57 59 86 65 73 34 60 26 70 89 20 37 19 79 71 36 53 51 42 88 49 15 1 41 13 63 82 3 5 14 32 81 50 47 30 62 12 77 16 44 35 40 43 18 91 95 17 23 76 54 21 22 87 46 64 78 80 74 29 85 48 68 25 99 55 61 4 66 69 38 39 67 9 52 72 84 92 10 2 27 90 96 75 98 7 28 58 31 97 0 WITH VALUE: 24658
+WHICH IS: 88.6319% OF THE OPTIMUM
+in 107.722 seconds (user time)
+in 106.837 seconds (CPU time)
+
+
+
+#####################################################
+
+RESULTS FROM RUN 1
+
+***RESULTS with Simulated Annealing
+
+
+number of nodes n = 100
+population size: 1000
+number of generations: 500
+mutation probability: 0.2
+simulated annealing?: 1
+simulated annealing max iterations: 6000
+
+
+*******BEST solution is: 
+0 94 9 67 85 37 19 79 29 74 78 64 36 71 53 51 57 83 6 59 73 56 93 60 34 65 86 88 42 49 15 1 41 13 63 82 3 5 14 32 81 50 30 47 62 12 77 16 40 43 18 91 95 35 44 17 23 76 54 21 22 87 46 80 55 99 25 68 61 4 66 39 38 69 52 72 84 92 10 27 90 96 75 58 31 28 98 7 2 97 11 70 26 33 8 24 45 48 20 89 0 WITH VALUE: 24366
+WHICH IS: 89.9508% OF THE OPTIMUM
+in 95.5596 seconds (user time)
+in 95.0901 seconds (CPU time)
+
+
+
+number of nodes n = 100
+population size: 1000
+number of generations: 500
+mutation probability: 0.2
+simulated annealing?: 1
+simulated annealing max iterations: 6000
+
+
+*******BEST solution is: 
+0 89 20 85 48 79 19 37 45 24 8 26 60 34 93 56 33 6 83 57 51 88 42 49 76 15 12 62 30 47 50 14 32 5 3 65 73 59 86 82 13 63 81 41 1 77 16 40 43 18 91 95 35 44 17 23 22 21 87 54 53 71 36 64 46 80 78 29 74 55 99 25 68 61 4 66 39 38 69 52 67 9 72 84 92 10 2 27 90 96 98 7 28 75 58 31 97 11 70 94 0 WITH VALUE: 24204
+WHICH IS: 90.6824% OF THE OPTIMUM
+in 89.5762 seconds (user time)
+in 89.3316 seconds (CPU time)
+
+
+
+number of nodes n = 100
+population size: 1000
+number of generations: 500
+mutation probability: 0.2
+simulated annealing?: 1
+simulated annealing max iterations: 6000
+
+
+*******BEST solution is: 
+0 89 20 67 85 48 29 74 68 39 66 4 61 25 99 55 80 78 64 46 36 71 79 19 37 45 24 8 26 33 56 6 83 57 53 51 87 22 21 54 23 95 17 44 35 91 18 43 40 16 77 12 1 41 81 62 30 47 50 14 32 5 3 82 63 13 15 76 49 42 88 86 65 73 59 93 60 34 70 11 97 31 28 7 98 58 75 96 90 27 2 10 92 84 72 52 69 38 9 94 0 WITH VALUE: 24940
+WHICH IS: 87.3583% OF THE OPTIMUM
+in 90.1876 seconds (user time)
+in 89.9966 seconds (CPU time)
+
+
+
+number of nodes n = 100
+population size: 1000
+number of generations: 500
+mutation probability: 0.2
+simulated annealing?: 1
+simulated annealing max iterations: 6000
+
+
+*******BEST solution is: 
+0 94 28 2 84 72 52 69 38 39 66 4 61 68 29 74 25 99 55 80 78 46 64 22 21 87 54 49 15 76 23 17 44 35 95 91 18 43 40 16 77 12 1 41 13 63 81 62 30 47 50 14 32 5 3 82 88 59 73 56 93 60 34 65 86 42 51 53 36 71 57 83 6 33 26 70 11 89 20 45 8 24 37 19 79 48 85 67 9 92 10 27 90 96 98 7 75 58 31 97 0 WITH VALUE: 25218
+WHICH IS: 86.1027% OF THE OPTIMUM
+in 92.2379 seconds (user time)
+in 92.0135 seconds (CPU time)
+
+
+
+#####################################################
+
+RESULTS FROM RUN 2
+
+***RESULTS with Simulated Annealing
+
+
+number of nodes n = 100
+population size: 1000
+number of generations: 500
+mutation probability: 0.2
+simulated annealing?: 1
+simulated annealing max iterations: 6000
+
+
+*******BEST solution is: 
+0 2 10 92 84 72 52 69 38 66 4 39 9 67 85 48 37 19 79 29 74 68 61 25 99 55 80 78 46 64 36 71 33 56 83 6 57 88 42 51 53 87 22 21 54 49 76 15 1 41 23 17 44 35 95 91 18 43 40 16 77 12 62 30 47 50 81 13 63 32 14 5 3 82 86 65 73 59 93 34 60 26 8 24 45 89 20 70 11 97 31 58 75 98 96 90 27 7 28 94 0 WITH VALUE: 24378
+WHICH IS: 89.8966% OF THE OPTIMUM
+in 90.6045 seconds (user time)
+in 90.3771 seconds (CPU time)
+
+
+
+number of nodes n = 100
+population size: 1000
+number of generations: 500
+mutation probability: 0.2
+simulated annealing?: 1
+simulated annealing max iterations: 6000
+
+
+*******BEST solution is: 
+0 89 97 31 58 75 28 7 98 96 90 27 2 10 92 84 72 9 67 39 38 52 69 66 4 61 68 29 74 25 99 55 80 78 46 64 36 71 53 87 22 21 54 49 76 23 17 44 95 91 18 43 40 35 16 77 15 41 1 12 62 30 47 50 14 81 63 13 88 82 32 5 3 86 65 73 59 42 51 57 83 6 19 79 37 48 85 20 45 24 8 33 56 93 34 60 26 70 11 94 0 WITH VALUE: 25241
+WHICH IS: 85.9988% OF THE OPTIMUM
+in 90.9636 seconds (user time)
+in 90.638 seconds (CPU time)
+
+
+
+number of nodes n = 100
+population size: 1000
+number of generations: 500
+mutation probability: 0.2
+simulated annealing?: 1
+simulated annealing max iterations: 6000
+
+
+*******BEST solution is: 
+0 97 31 58 75 96 27 90 98 7 28 9 67 20 89 11 70 34 60 26 8 45 24 33 93 56 6 59 73 65 86 42 88 82 3 5 32 14 50 47 30 62 12 1 41 81 63 13 15 77 16 44 35 40 43 18 91 95 17 23 76 49 54 21 22 87 53 51 83 57 71 36 64 46 78 80 74 29 37 19 79 85 48 68 25 99 55 61 4 66 39 38 69 52 72 84 92 10 2 94 0 WITH VALUE: 24445
+WHICH IS: 89.594% OF THE OPTIMUM
+in 88.104 seconds (user time)
+in 87.8437 seconds (CPU time)
+
+
+
+number of nodes n = 100
+population size: 1000
+number of generations: 500
+mutation probability: 0.2
+simulated annealing?: 1
+simulated annealing max iterations: 6000
+
+
+*******BEST solution is: 
+0 94 11 70 45 24 8 33 26 60 34 93 56 6 57 83 51 59 73 65 86 3 5 14 81 32 82 88 42 23 17 44 35 95 91 18 43 40 16 77 12 1 41 13 63 50 47 30 62 15 76 49 54 21 22 87 53 71 36 64 46 80 78 37 48 85 67 9 20 19 79 29 74 68 55 99 25 61 4 66 39 38 69 52 72 84 92 10 2 27 90 96 98 7 28 75 58 31 97 89 0 WITH VALUE: 24985
+WHICH IS: 87.1551% OF THE OPTIMUM
+in 88.4176 seconds (user time)
+in 88.1872 seconds (CPU time)
+
+
+
+#####################################################
+

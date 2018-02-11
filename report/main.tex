@@ -17,17 +17,18 @@
 
 
 % The following packages can be found on http:\\www.ctan.org
-%\usepackage{graphics} % for pdf, bitmapped graphics files
-%\usepackage{epsfig} % for postscript graphics files
+\usepackage{graphics} % for pdf, bitmapped graphics files
+\usepackage{epsfig} % for postscript graphics files
 %\usepackage{mathptmx} % assumes new font selection scheme installed
 %\usepackage{times} % assumes new font selection scheme installed
 %\usepackage{amsmath} % assumes amsmath package installed
 %\usepackage{amssymb}  % assumes amsmath package installed
 \usepackage{listings}  % assumes amsmath package installed
-
+\usepackage{caption}
+\usepackage{subfigure}
 
 \title{\LARGE \bf
-\hspace*{ 0.5 in}Comparing exact and heuristic methods for the  \newline Traveling Salesperson-Electronic Board Drilling problem
+\hspace*{ 0.5 in}Comparing exact and heuristic methods for the  \newline Electronic Board Drilling-Traveling Salesperson problem
 }
 
 %\author{ \parbox{3 in}{\centering Huibert Kwakernaak*
@@ -45,10 +46,12 @@
 %         {\tt\small pmisra@cs.wright.edu}}
 %}
 
-\author{Giovanni Mazzocchin}% <-this % stops a space
+\author{Giovanni Mazzocchin
+\thanks{*This project has been done for a course on Combinatorial Optimisation held in Padua by professors Luigi De Giovanni and Marco Di Summa}% <-this % stops a space
+}
 %\thanks{*This work was not supported by any organization}% <-this % stops a space
 %\thanks{$^{1}$H. Kwakernaak is with Faculty of Electrical Engineering, Mathematics and Computer Science,
-%        University of Twente, 7500 AE Enschede, The Netherlands
+% University of Twente, 7500 AE Enschede, The Netherlands
 %        {\tt\small h.kwakernaak at papercept.net}}%
 %\thanks{$^{2}$P. Misra is with the Department of Electrical Engineering, Wright State University,
 %        Dayton, OH 45435, USA
@@ -67,13 +70,20 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-This report outlines some aspects of our work on the implementation of well-known exact and heuristic methods for the classic \textit{Travelling Salesperson-Electronic Board Drilling} problem.
+This report outlines some aspects of our work on the implementation of well-known exact and heuristic methods for the classic \textit{Electronic Board Drilling-Travelling Salesperson} problem.
 Implementation issues and evaluation outcomes will be included as well.
 \end{abstract}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{INTRODUCTION}
+\subsection{The problem}
+This assignment comes from a real world situation: \newline \textit{a company produces boards with holes used to build electric frames. Boards are positioned over a machine and a drill moves over them, stopping at some desired positions
+and drilling holes. Given the holes' positions on the board, we are supposed to determine the sequence of holes that minimises the total drilling time, taking into account
+that the time required for making an hole is a constant.} \newline 
+This description's similarity to the more famous \textit{Traveling Salesperson problem} is noteworthy: actually,
+they can be thought of as the same problem.
+\subsection{The project} 
 As the title suggests, our work is made up of two main parts:
 \begin{itemize}
 \item the first part comprises a C++ tiny program that utilises \textit{CPLEX}, a popular optimisation software which offers a library for this very language;
@@ -86,7 +96,7 @@ As the title suggests, our work is made up of two main parts:
 The simplest yet essential component of this program is a class containing some methods able to read data from plain text files. These files should be generated according to the following template:
 \begin{itemize}
 \item the very first line should contain just a number standing for the problem's size;
-\item the remainder of the file should contain a symmetric matrix of real numbers equipped with this meaning: the number in position \textit{(i,j)} represents the cost needed to move from city (or \textit{hole}) \textit{i} to city \textit{j}.
+\item the remainder of the file should contain a symmetric matrix of real numbers equipped with this meaning: the number in position \textit{(i,j)} represents the cost needed to move from hole (or \textit{city}) \textit{i} to city \textit{j}.
 \end{itemize}
 
 \subsection{Core components and remarkable issues}
@@ -96,15 +106,15 @@ The \textit{main} function works essentially as a starting point, namely, it doe
 }
 \begin{lstlisting}[caption={Visit constraint}]
 for (int i = 0; i < data.n; i++){
-	coefs[i] = 1.0;
-	for (int j = 0; j < data.n; j++){
-            idx[j] = i*data.n + j;
-	}
-	CHECKED_CPX_CALL(CPXaddrows,
-        env, lp, 
-        0, 1, data.n, &rhs, &sense[0], 
-        &matbeg[0], &idx[0], &coefs[0],
-        NULL, NULL);
+ coefs[i] = 1.0;
+ for (int j = 0; j < data.n; j++){
+   idx[j] = i*data.n + j;
+ }
+ CHECKED_CPX_CALL(CPXaddrows,
+    env, lp, 
+    0, 1, data.n, &rhs, &sense[0], 
+    &matbeg[0], &idx[0], &coefs[0],
+    NULL, NULL);
 }
 \end{lstlisting} 
 With respect to variables and respective coefficients, we resorted to plain STL 
@@ -119,14 +129,14 @@ In the above code extract \texttt{x\_init\_index} represents the index where
 the \textit{x} variables start from: it is equal to the square of the problem's size due to the fact that every \textit{y} has two indices. The second line declares a vector, \texttt{idx} (whose size corresponds to the problem's dimension), which will store all the variables the following constraint will make use of. On the other hand, \texttt{coefs} will store the coefficients related to the variables in question.
 
 \subsection{Outcomes: reached optima and execution times}
-In order to evaluate this first part, we generated some reference random instances (which will be used by the second part as well) our program can be run on. \newline The following table gives some important pieces of information about this program's efficiency and effectiveness.
+In order to evaluate this first part, we generated some reference random instances (which will be used by the second part as well) our program can be run against. \newline Table 1  gives insight into this program's efficiency and effectiveness.
 \begin{table}[h]
 \caption{Results for the first part}
 \label{table_example}
 \begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
-Size of the problem & Optimum & Time (in seconds) \\
+\textbf{Size of the problem} & \textbf{Optimum} & \textbf{Time (in seconds)} \\
 \hline
 12 &  66.4 &  0.38\\
 \hline
@@ -138,7 +148,9 @@ Size of the problem & Optimum & Time (in seconds) \\
 \hline
 60 & 629.8 & 78.7 \\
 \hline
-100 & 21282 & 370 \\
+100(a) & 21282 & 370 \\
+\hline
+100(b) & 22141 & 970 \\
 \hline
 200 & unknown & too large\\
 \hline
@@ -165,8 +177,12 @@ A traditional Genetic Algorithm for optimisation problems can be summarised as f
 \item \texttt{return} the best solution altogether.
 \end{enumerate}
 
+\subsection{Solution encoding and Fitness function}
+The chosen encoding was the so-called \textit{path-representation}, according to which solutions can be seen as sequences of visited holes. \newline
+As for the \textit{fitness} function, we decided not to use anything beyond the given objective function's value. Furthermore, we should say that we did not come across any viable alternative.
+
 \subsection{Generating an initial population}
-The first issue we face is generating of a population as a good starting point for our algorithm. In this work we chose two strategies: the first leaves everything to chance, creating a random pool of feasible solutions the algorithm can start from, whereas the latter performs some \textit{local search} (namely a certain amount of iterations with \textit{Simulated Annealing}) on each individual, so that hopefully (but we do know that Simulated Annealing accomplishes its goal) the "genetic loop" is provided with a higher-quality initial population.  
+The first issue we face is generating a population as a good starting point for our algorithm. In this work we chose two strategies: the first leaves everything to chance, creating a random pool of feasible solutions the algorithm can start from, whereas the latter performs some \textit{local search} (namely a certain amount of iterations with \textit{Simulated Annealing}) on few (10\%) individuals, so that hopefully (but we do know that Simulated Annealing accomplishes its goal) the "genetic loop" is provided with a higher-quality initial population. Sometimes the latter technique will be referred to as "smart initialisation".
 \begin{lstlisting}[caption={Code within main annealing loop, from \texttt{TSPPopulation.cpp}}]
 double neighbourVal=evaluate(neighbourSol);   
 double probability;
@@ -208,87 +224,104 @@ It can be shown that this strategy does not suffer from any bias towards "super-
 As far as descendants' generation is concerned, we know we can carry it out thanks to various kinds of \textit{Crossover operators}. Generally speaking, we
 could think of Crossover as a way to include a combination of the parents' features into a child. As we have seen in the context of selection, there are lots of proposed operators in this context as well, which may vary in cost and
 effectiveness. The latter requirement matters particularly in the setting we are working on: in fact, any operator that generates an offspring without being concerned about its feasibility would not be deemed as much effective.
-We wrote the code both for \textit{Partially-Mapped Crossover} and \textit{Order Crossover}, but since the former operator does not enforce feasibility, we are more amenable to go through the latter's steps.
+We wrote the code both for \textit{Partially-Mapped Crossover} and \textit{Order Crossover} (Oliver et al., Goldberg)), but since the former operator does not enforce feasibility, we are more amenable to go through the latter's steps, which are listed below:
+\begin{enumerate}
+\item randomly select a substring from a parent;
+\item produce a proto-child by copying the substring into the
+its corresponding position;
+\item discard (from the second parent) the holes which have already been put in the substring. The remaining sequence contains the holes eligible to enter the proto-child;
+\item place the holes into the unfixed positions of the proto-child proceeding from left to right. The order of the holes stemming from the second parent must be preserved.
+\end{enumerate}
+
+
 \begin{lstlisting}[caption={Order Crossover, in \texttt{TSPCrossover.cpp}}]
 for (int i = 1; i < sol_size - 1; i++){
- if (child1Counter==fst_cut_ind_rnd){
-  child1Counter=child1Counter+confZoneSize;
+ if (counter1==fst_cut_ind_rnd){
+  counter1=counter1+zoneSize;
  }
- if (child_2_counter==fst_cut_ind_rnd){
-  child2Counter=child2Counter+confZoneSize;
+ if (counter2==fst_cut_ind_rnd){
+  counter2=counter2+zoneSize;
  }
- it_indicator = std::find(conflictZone.begin(),
-  conflictZone.end(), parent1[i]);
+ it_indicator=find(conflictZone.begin(),
+  conflictZone.end(),parent1[i]);
  if(it_indicator==conflictZone.end()){
-  child1.sequence[child1Counter]=parent1[i]; 		                            
+  child1.sequence[counter1]=parent1[i]; 		                          
  }
 }		
 \end{lstlisting}
 
-\subsection{Some Common Mistakes}
-\begin{itemize}
+\subsection{Generational replacement}
+One of the components needed by evolution is \textit{generational replacement}. With lack of any sensible replacement, evolution would get stuck to inadequate individuals. \newline 
+The kind of strategy we adopted is called \textit{Best individuals replacement}. The aspect that drove us toward this method was its clear general description, which can be summarised straightforwardly with this sentence: \newline
+\textit{generate \textbf{R} new individuals from \textbf{N} old ones, then keep the best \textbf{N} among the total \textbf{N + R}}. \newline
+We achieved this method's goal by means of plain vector concatenation and sorting. In particular, the concatenation consists in appending the current offspring to the current population (which are both represented with vectors). The resulting vector is then sorted using an appropriate comparator. Efficiency reasons forced us to dispose of the worst 3\% of the resulting vector; this trick let us save up to minutes of computation time. Thus, the outcomes we will talk about will always refer to runs that take advantage of the trick mentioned above.
+\begin{lstlisting}[caption={Best individual replacement, in \texttt{TSPPopulation.cpp}}]
+TSPSolution repPop(vector offspring){ 
+ population.insert(population.end(), 
+    offspring.begin(),offspring.end());
+ TSPSolutionComparator tspSolComp;
+ sort(population.begin(),population.end(),
+    tspSolComp);
+}		
+\end{lstlisting}
 
 
-\item The word ÒdataÓ is plural, not singular.
-\item The subscript for the permeability of vacuum ?0, and other common scientific constants, is zero with subscript formatting, not a lowercase letter ÒoÓ.
-\item In American English, commas, semi-/colons, periods, question and exclamation marks are located within quotation marks only when a complete thought or name is cited, such as a title or full quotation. When quotation marks are used, instead of a bold or italic typeface, to highlight a word or phrase, punctuation should appear outside of the quotation marks. A parenthetical phrase or statement at the end of a sentence is punctuated outside of the closing parenthesis (like this). (A parenthetical sentence is punctuated within the parentheses.)
-\item A graph within a graph is an ÒinsetÓ, not an ÒinsertÓ. The word alternatively is preferred to the word ÒalternatelyÓ (unless you really mean something that alternates).
-\item Do not use the word ÒessentiallyÓ to mean ÒapproximatelyÓ or ÒeffectivelyÓ.
-\item In your paper title, if the words Òthat usesÓ can accurately replace the word ÒusingÓ, capitalize the ÒuÓ; if not, keep using lower-cased.
-\item Be aware of the different meanings of the homophones ÒaffectÓ and ÒeffectÓ, ÒcomplementÓ and ÒcomplimentÓ, ÒdiscreetÓ and ÒdiscreteÓ, ÒprincipalÓ and ÒprincipleÓ.
-\item Do not confuse ÒimplyÓ and ÒinferÓ.
-\item The prefix ÒnonÓ is not a word; it should be joined to the word it modifies, usually without a hyphen.
-\item There is no period after the ÒetÓ in the Latin abbreviation Òet al.Ó.
-\item The abbreviation Òi.e.Ó means Òthat isÓ, and the abbreviation Òe.g.Ó means Òfor exampleÓ.
+\subsection{Exploiting mutation to avoid premature convergence}
+It is well known that lack of \textit{mutation} occurrence would make our algorithm doomed to be characterized by poor diversification. As a matter of fact, \textit{diversification} becomes necessary in order to escape from premature convergence, that is to say, ending up with a population made up of excessively similar individuals (\textit{genetic drift}) \newline
+Therefore we are forced to introduce mutations, which obviously should occur seldom enough. Thanks to much painstaking tuning and testing, we found out that a fixed 0.2\% mutation probability (then multiplied by three during the very last 5\% of total generations) drives to decent results (hereafter we will stick to this value). \newline
+As in the case with other genetic steps, there are many ways to perform mutation on an individual. Trial and error led us to choose \textit{2-opt} moves (namely, reversal of random substrings); however, our first choice consisted in performing random swaps between couples of holes (with very poor results which will not be reported). \newline
+At last, it is worthwhile to mention that mutations could occur both on the initial population (i.e. "initial" is referred to a particular generation) and on its offspring.
+\begin{lstlisting}[caption={2-opt move, in \texttt{TSPCrossover.h}}]
+void doMutation(TSPSolution& individual){
+ TSPSolution tmpSol(individual);
+ for(int i=fstIndex;i<=sndIndex;i++){
+   individual.sequence[i]=tmpSol[...];
+ }
+}
+\end{lstlisting}
 
-\end{itemize}
-
-
-\section{USING THE TEMPLATE}
-
-Use this sample document as your LaTeX source file to create your document. Save this file as {\bf root.tex}. You have to make sure to use the cls file that came with this distribution. If you use a different style file, you cannot expect to get required margins. Note also that when you are creating your out PDF file, the source file is only part of the equation. {\it Your \TeX\ $\rightarrow$ PDF filter determines the output file size. Even if you make all the specifications to output a letter file in the source - if you filter is set to produce A4, you will only get A4 output. }
-
-It is impossible to account for all possible situation, one would encounter using \TeX. If you are using multiple \TeX\ files you must make sure that the ``MAIN`` source file is called root.tex - this is particularly important if your conference is using PaperPlaza's built in \TeX\ to PDF conversion tool.
-
-\subsection{Headings, etc}
-
-Text heads organize the topics on a relational, hierarchical basis. For example, the paper title is the primary text head because all subsequent material relates and elaborates on this one topic. If there are two or more sub-topics, the next level head (uppercase Roman numerals) should be used and, conversely, if there are not at least two sub-topics, then no subheads should be introduced. Styles named ÒHeading 1Ó, ÒHeading 2Ó, ÒHeading 3Ó, and ÒHeading 4Ó are prescribed.
-
-\subsection{Figures and Tables}
-
-Positioning Figures and Tables: Place figures and tables at the top and bottom of columns. Avoid placing them in the middle of columns. Large figures and tables may span across both columns. Figure captions should be below the figures; table heads should appear above the tables. Insert figures and tables after they are cited in the text. Use the abbreviation ÒFig. 1Ó, even at the beginning of a sentence.
-
+\section{Outcome analysis}
+In this section we will focus on outcomes and data representation. In the last section of the paper, called \textit{Plots}, we will show one or two graphs per instance, whose aim is to show how quality and running time vary depending on the number of generations, given a fixed chosen number of individuals for each instance. Medium-sized instances have been attacked using both pure randomness and some local search in initialisation. On the other hand, bigger instances have been attacked only by means of smart initialisation. \newline 
+We remark on the fact that all the plotted data come from \textit{averages}, that is, the program has been run several time
+after fixing some parameters and then an average of the results has been calculated. Further details about testing can be found in the appendix titled \textit{Practical Notes}. \newline
+The analysed instances are exactly the same as the ones that
+have been discussed in the first part of the paper. \newline
+From now on, we proceed with a thorough analysis of the graphs.
+\subsubsection{Small instances} fig. a), b), c), and d) show
+the average outcomes for two specific $12\times12$ and $26\times26$ instances. Figures show evident quality improvements as long as the number of generations increases, with some exceptions that are due to (we believe) the stochastic nature of genetic algorithms. Up to now, running time is not an issue.
+\subsubsection{Medium-sized instances} figures e) and f) come from a more complex background: this $42\times42$ instance has been tested both with and without Simulated Annealing. Thus, two lines have been plotted. Using Simulated Annealing (1000 iterations) to initialise even a small fraction of the starting population gave us remarkable improvements, even though with a reduced population size. In fact, the 800-individual population was tested without Simulated Annealing, whereas the 500-individual one did take advantage of it.
+\subsubsection{Large instances} figures g) and h) refer to the instance that had been named \textit{100a} in the first part.
+Here we plotted only the results coming from a Simulated Annealing initialisation (6000 iterations), because its absence 
+provided us with very poor results. These plots show that quality 
+and running time start to become an issue.
+\newline
+A table with quality variances for some instances is given below:
 \begin{table}[h]
-\caption{An Example of a Table}
+\caption{Results for the first part}
 \label{table_example}
 \begin{center}
-\begin{tabular}{|c||c|}
+\begin{tabular}{|c|c|c|c|c|}
 \hline
-One & Two\\
+\textbf{Size} & \textbf{Smart init. iter.} & \textbf{Population-Gener.} & \textbf{Variance}\\
 \hline
-Three & Four\\
+42 &  0 & 800-400 & 1.37\%\\
+\hline
+42 & 1000 & 500-300 & 0.63\% \\
+\hline
+60 & 0 & 1500-500 & 1.77\%\\
+\hline
+60 & 4000 & 1500-500 &  0.17\% \\
+\hline
+100b & 6000 & 1500-500 & 1.07\% \\
 \hline
 \end{tabular}
 \end{center}
 \end{table}
 
-
-   \begin{figure}[thpb]
-      \centering
-      \framebox{\parbox{3in}{We suggest that you use a text box to insert a graphic (which is ideally a 300 dpi TIFF or EPS file, with all fonts embedded) because, in an document, this method is somewhat more stable than directly inserting a picture.
-}}
-      %\includegraphics[scale=1.0]{figurefile}
-      \caption{Inductance of oscillation winding on amorphous
-       magnetic core versus DC bias magnetic field}
-      \label{figurelabel}
-   \end{figure}
-   
-
-Figure Labels: Use 8 point Times New Roman for Figure labels. Use words rather than symbols or abbreviations when writing Figure axis labels to avoid confusing the reader. As an example, write the quantity ÒMagnetizationÓ, or ÒMagnetization, MÓ, not just ÒMÓ. If including units in the label, present them within parentheses. Do not label axes only with units. In the example, write ÒMagnetization (A/m)Ó or ÒMagnetization {A[m(1)]}Ó, not just ÒA/mÓ. Do not label axes with a ratio of quantities and units. For example, write ÒTemperature (K)Ó, not ÒTemperature/K.Ó
-
 \section{CONCLUSIONS}
+This practical work on combinatorial problems allowed us to grasp many fundamental concepts. First of all, we realized that exact methods do not always manage to give good solutions in an acceptable amount of time. Seeing the striking surge in running time beyond instances with 60 holes has been interesting as well. \newline 
+As far as genetic algorithms are concerned, the results for smaller instances have been excellent both in term of quality and computation time. On the other hand, bigger instances required much more time to approach the optimum. Initialising some individuals by way of Simulated Annealing gave us a dramatic improvement for these instances. 
 
-A conclusion section is not required. Although a conclusion may review the main points of the paper, do not replicate the abstract as the conclusion. A conclusion might elaborate on the importance of the work or suggest applications and extensions. 
 
 \addtolength{\textheight}{-12cm}   % This command serves to balance the column lengths
                                   % on the last page of the document manually. It shortens
@@ -306,36 +339,85 @@ A conclusion section is not required. Although a conclusion may review the main 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{APPENDIX}
+\section*{Practical notes}
+Here the reader can find some important information regarding 
+compilation and execution of the software.
+\begin{enumerate} 
+\item \textbf{Compilation and execution}: compilation should be as easy as running \texttt{make} in the project's root folder from the command line.\newline 
+In order to get some hints on how to run the program, launch \texttt{./main} from the same directory; anyway, we have provided you with some handy scripts which will be discussed below.
+\item \textbf{Instances}: the directory called \texttt{instance\_generator} contains some instances we found in \textit{TSPLIB}, a library of sample instances for well-known combinatorial problems.
+\item \textbf{Testing}: some \textit{shell scripts} are present under the directory named \texttt{results}. There exists a script named \texttt{launchX.sh} (where \textit{X} is the instance's size) for each instance. In order to run them, you are obliged to give them the execution permission running following command: \texttt{chmod +x script\_name}. \newline
+These scripts accept two parameters from the command line: first, they require the problem's known optimum, then the name of an output file which will store their output. \newline We decided to leave some parameters such as \textit{population's size} and \textit{number of generations} hard-coded. \newline
+After receiving all the data, these scripts run our program  several times (up to 49 for smaller instances, whereas we stopped to 30 for the bigger ones), so that we can calculate statistical parameters (such as mean and variance) afterwards.
+This large amount of testing is required since the algorithms' behaviour is stochastic in nature.
+\end{enumerate}
 
-Appendixes should appear before the acknowledgment.
+\section*{Plots}
+Some plots (along with understandable captions) are provided in the next pages.
+\clearpage
 
-\section*{ACKNOWLEDGMENT}
+\begin{figure}[ht!]
+     \begin{center}
+%
+        \subfigure[Quality for a $12\times12$ instance]{%
+            \label{fig:first}
+            \includegraphics[width=0.5\textwidth]{quality12}
+        }%
+        \subfigure[Running time for a $12\times12$ instance]{%
+           \label{fig:second}
+           \includegraphics[width=0.5\textwidth]{time12}
+        }\\ %  ------- End of the first row ----------------------%
+        \subfigure[Quality for a $26\times26$ instance]{%
+            \label{fig:third}
+            \includegraphics[width=0.5\textwidth]{quality26}
+        }%
+        \subfigure[Running time for a $26\times26$ instance]{%
+            \label{fig:fourth}
+            \includegraphics[width=0.5\textwidth]{time26}
+        }%
+%
+    \end{center}
+    %\caption{%
+     %   }%
+   \label{fig:subfigures}
+\end{figure}
 
-The preferred spelling of the word ÒacknowledgmentÓ in America is without an ÒeÓ after the ÒgÓ. Avoid the stilted expression, ÒOne of us (R. B. G.) thanks . . .Ó  Instead, try ÒR. B. G. thanksÓ. Put sponsor acknowledgments in the unnumbered footnote on the first page.
+\clearpage 
+\begin{figure}[ht!]
+     \begin{center}
+%
+        \subfigure[Quality for a $42\times42$ instance]{%
+            \label{fig:first}
+            \includegraphics[width=0.5\textwidth]{quality42}
+        }%
+        \subfigure[Running time for a $42\times42$ instance]{%
+           \label{fig:second}
+           \includegraphics[width=0.5\textwidth]{time42}
+        }\\ %  ------- End of the first row ----------------------%
+        \subfigure[Quality for a $100\times100$ instance]{%
+            \label{fig:third}
+            \includegraphics[width=0.5\textwidth]{quality100a}
+        }%
+        \subfigure[Running time for a $100\times100$ instance]{%
+            \label{fig:fourth}
+            \includegraphics[width=0.5\textwidth]{time100a}
+        }%
+%
+    \end{center}
+    %\caption{%
+     %   }%
+   \label{fig:subfigures}
+\end{figure}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-References are important to the reader; therefore, each citation must be complete and correct. If at all possible, references should be commonly available publications.
-
-
-
+\clearpage 
 \begin{thebibliography}{99}
-
 \bibitem{c1} Jean-Yves Potvin, Genetic algorithms for the
 traveling salesman problem,
 Centre de Recherche sur les Transports, Université de Montréal,
 C.P. 6128, Succ. Centre-Ville, Montréal, Québec, Canada H3C 3J7 
-
-
-
-
-
 \end{thebibliography}
-
-
-
 
 \end{document}

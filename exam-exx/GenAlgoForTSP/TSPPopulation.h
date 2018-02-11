@@ -16,7 +16,7 @@
 #include <list>
 
 class TSPPopulation{
-	private: 
+	private:
 		std::vector<TSPSolution> population;
 		int dimPop;
 		TSP tsp;
@@ -25,15 +25,15 @@ class TSPPopulation{
 		double mut_prob;
 		double total_pop_fitness();
 		void find_k_worst(int k);  //finds the k worst individuals and puts them as population's first elements
-		
+
 	public:
-		TSPPopulation(const TSP& tsp, int dimPop, const std::default_random_engine& rg,  
+		TSPPopulation(const TSP& tsp, int dimPop, const std::default_random_engine& rg,
 							 const std::uniform_real_distribution<double>& distr, double mut_prob);
-							 
-		void set_dimPop(int dim);		
+
+		void set_dimPop(int dim);
 		int get_dimPop();
-		void set_mutProb(double mp);				
-					 
+		void set_mutProb(double mp);
+
 		void initPopulation_random();
 		void initPopulation_simAnn(int maxTrials);    //initialize with Simulated Annealing (thus 'max trials')
 		std::vector<TSPSolution> getPopulation() const;

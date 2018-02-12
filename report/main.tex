@@ -167,7 +167,7 @@ which should be able to yield approximate yet good solutions. A general method a
 \subsection{Generic steps} 
 A traditional Genetic Algorithm for optimisation problems can be summarised as follows:
 \begin{enumerate}
-\item devise a suitable \textbf{encoding} for solutions (a.k.a. \underline{individuals}, hereafter there words will be interchangeable);
+\item devise a suitable \textbf{encoding} for solutions (a.k.a. \underline{individuals}, hereafter these words will be interchangeable);
 \item generate an initial \textbf{population}, i.e., a set of solutions;
 \item \texttt{Loop}:
 \item \hspace*{ 0.2 mm} \underline{select} couples (or groups) of \textbf{parent} solutions;
@@ -225,7 +225,7 @@ It can be shown that this strategy does not suffer from any bias towards "super-
 As far as descendants' generation is concerned, we know we can carry it out thanks to various kinds of \textit{Crossover operators}. Generally speaking, we
 could think of Crossover as a way to include a combination of parents' features into a child. As we have seen in the context of selection, there are lots of proposed operators here as well, which may vary in cost and
 effectiveness. The latter requirement matters particularly in the setting we are working on: in fact, any operator that generates an offspring without being concerned about its feasibility would not be deemed as much effective.
-We wrote the code both for \textit{Partially-Mapped Crossover} (Goldberg and Lingle) and \textit{Order Crossover} (Oliver et al., Goldberg)), but since the former operator does not enforce feasibility, we are more amenable to go through the latter's steps, which are listed below:
+We wrote the code both for \textit{Partially-Mapped Crossover} (Goldberg and Lingle) and \textit{Order Crossover} (Oliver et al., Goldberg), but since the former operator does not enforce feasibility, we are more amenable to go through the latter's steps, which are listed below:
 \begin{enumerate}
 \item randomly select a substring from a parent;
 \item produce a proto-child by copying the substring into the
@@ -311,9 +311,9 @@ A table with quality variances for some instances is given below:
 \hline
 60 & 0 & 1500-500 & 1.77\%\\
 \hline
-60 & 4000 & 1500-500 &  0.17\% \\
+60 & 4000 & 600-400 &  0.17\% \\
 \hline
-100b & 6000 & 1500-500 & 1.07\% \\
+100b & 6000 & 1000-500 & 1.07\% \\
 \hline
 \end{tabular}
 \end{center}
@@ -344,23 +344,27 @@ As far as genetic algorithms are concerned, the results for smaller instances ha
 Here the reader can find some important information regarding 
 compilation and execution of the software.
 
-\subsubsection{First part}
-\renewcommand{\labelitemi}{$\star$}
+%\subsubsection{First part}
+\begin{itemize}
+\item \textit{First part} 
+%\renewcommand{\labelitemi}{$\star$}
 \begin{itemize} 
-\item \textbf{Compilation and execution}: run \texttt{make} in the folder called \textit{tsp-drill}, then launch \textit{./main instance\_file\_name}
-from the same place. Instances can be found under \textit{GenAlgoForTSP/instance\_generator}.
+\item \textbf{Compilation and execution}: run \texttt{make} in the folder called \textit{part1}, then launch \textit{./main instance\_file\_name}
+from the same place. Instances can be found under \textit{part2/instance\_generator}.
 \end{itemize}
 
-\subsubsection{Second part}
-\renewcommand{\labelitemi}{$\star$}
+%\subsubsection{Second part}
+\item \textit{Second part}
+%\renewcommand{\labelitemi}{$\star$}
 \begin{itemize} 
-\item \textbf{Compilation and execution}: compilation should be as easy as running \textit{make} in the folder called \textit{GenAlgoForTSP}.\newline 
+\item \textbf{Compilation and execution}: compilation should be as easy as running \textit{make} in the folder called \textit{part2}.\newline 
 In order to get some hints on how to run the program, launch \textit{./main} from the same directory; anyway, we have provided you with some handy scripts which will be discussed below.
 \item \textbf{Instances}: the directory named \textit{instance\_generator} contains some instances we found in \textit{TSPLIB}, a library of sample instances for well-known combinatorial problems.
 \item \textbf{Testing}: some \textit{shell scripts} are present under the directory named \texttt{results}. There exists a script named \textit{launchX.sh} (where \textit{X} is the instance's size) for each instance. In order to run them, you are obliged to give them execution permissions running the following command: \textit{chmod +x script\_name}. \newline
 These scripts accept two parameters from the command line: first, they require the problem's known optimum, then the name of an output file which will store their output. \newline We decided to leave some parameters such as \textit{population's size} and \textit{number of generations} hard-coded. \newline
 After receiving all the data, these scripts run our program  several times (up to 49 for smaller instances, whereas we stopped to 30 for the bigger ones), so that we can calculate statistical parameters (such as mean and variance) afterwards.
 This large amount of testing is required since the algorithms' behaviour is stochastic in nature.
+\end{itemize}
 \end{itemize}
 
 \section*{Plots}

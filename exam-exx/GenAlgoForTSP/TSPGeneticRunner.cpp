@@ -97,11 +97,11 @@ TSPSolution TSPGeneticRunner::run(){
 
 		bestSolutions.push_back(bestSolCurrGen);
 		generation++;
-    }
+	}
 
-    //loop to get best solution
-    TSPSolution bestSol = bestSolutions[bestSolutions.size()-1];
-    for (uint gen = 0; gen < bestSolutions.size(); gen++){
+	//loop to get best solution
+	TSPSolution bestSol = bestSolutions[bestSolutions.size()-1];
+	for (uint gen = 0; gen < bestSolutions.size(); gen++){
 		if (TSPSolver::evaluate(bestSolutions[gen], tsp) < TSPSolver::evaluate(bestSol, tsp)){  //we are minimizing
 			bestSol = bestSolutions[gen];
 		}

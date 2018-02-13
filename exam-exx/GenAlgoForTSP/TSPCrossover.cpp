@@ -37,7 +37,7 @@ std::vector<TSPSolution> TSPCrossover::generateOffspring(bool& feasible_flag){  
 			do_mutation(parent_2);
 		}
 		ret_offspring.push_back(parent_1);
-	    ret_offspring.push_back(parent_2);
+		ret_offspring.push_back(parent_2);
 
 		return ret_offspring;
 	}
@@ -74,9 +74,9 @@ std::vector<TSPSolution> TSPCrossover::generateOffspring(bool& feasible_flag){  
 	/*Complete offspring before the first cut*/
 	for (int i = 1; i < fst_cut_ind_rnd; i++){
 		std::vector<int>::iterator it_indicator;
-	    /*Conflict check for first child*/
-	    it_indicator = std::find(conflict_zone_1.begin(), conflict_zone_1.end(), parent_1.sequence[i]);
-	    if (it_indicator == conflict_zone_1.end()){     //if current parent's element hadn't be put in the child
+		/*Conflict check for first child*/
+		it_indicator = std::find(conflict_zone_1.begin(), conflict_zone_1.end(), parent_1.sequence[i]);
+		if (it_indicator == conflict_zone_1.end()){     //if current parent's element hadn't be put in the child
 		   child_1.sequence[i] = parent_1.sequence[i];    //in this case we can insert the parent value in the corresponding child, at the same position
 		}
 		else{ //if there was a conflict, use the mapping
@@ -84,7 +84,7 @@ std::vector<TSPSolution> TSPCrossover::generateOffspring(bool& feasible_flag){  
 		}
 		/*Conflict check for second child*/
 		it_indicator = std::find(conflict_zone_2.begin(), conflict_zone_2.end(), parent_2.sequence[i]);
-	    if (it_indicator == conflict_zone_2.end()){     //if current parent's element hadn't been put in the child
+		if (it_indicator == conflict_zone_2.end()){     //if current parent's element hadn't been put in the child
 		   child_2.sequence[i] = parent_2.sequence[i];    //in this case we can insert the parent value in the corresponding child, at the same position
 		}
 		else{
@@ -95,9 +95,9 @@ std::vector<TSPSolution> TSPCrossover::generateOffspring(bool& feasible_flag){  
 	/*Complete offspring after the second cut*/
 	for (int i = snd_cut_ind_rnd; i < sol_size-1; i++){
 		std::vector<int>::iterator it_indicator;
-	    /*Conflict check for first child*/
-	    it_indicator = std::find(conflict_zone_1.begin(), conflict_zone_1.end(), parent_1.sequence[i]);
-	    if (it_indicator == conflict_zone_1.end()){     //if current parent's element hadn't been put in the child
+		/*Conflict check for first child*/
+		it_indicator = std::find(conflict_zone_1.begin(), conflict_zone_1.end(), parent_1.sequence[i]);
+		if (it_indicator == conflict_zone_1.end()){     //if current parent's element hadn't been put in the child
 		   child_1.sequence[i] = parent_1.sequence[i];    //in this case we can insert the parent value in the corresponding child, at the same position
 		}
 		else{   //if there was a conflict, use the mapping
@@ -105,7 +105,7 @@ std::vector<TSPSolution> TSPCrossover::generateOffspring(bool& feasible_flag){  
 		}
 		/*Conflict check for second child*/
 		it_indicator = std::find(conflict_zone_2.begin(), conflict_zone_2.end(), parent_2.sequence[i]);
-	    if (it_indicator == conflict_zone_2.end()){     //if current parent's element hadn't been put in the child
+		if (it_indicator == conflict_zone_2.end()){     //if current parent's element hadn't been put in the child
 		   child_2.sequence[i] = parent_2.sequence[i];    //in this case we can insert the parent value in the corresponding child, at the same position
 		}
 		else{  //if there was a conflict, use the mapping
@@ -122,7 +122,7 @@ std::vector<TSPSolution> TSPCrossover::generateOffspring(bool& feasible_flag){  
 		}
 
 		ret_offspring.push_back(child_1);
-	    ret_offspring.push_back(child_2);
+		ret_offspring.push_back(child_2);
 
 		return ret_offspring;
 	}
@@ -138,7 +138,7 @@ std::vector<TSPSolution> TSPCrossover::generateOffspring_OC(){  //implements Ord
 			do_mutation(parent_2);
 		}
 		ret_offspring.push_back(parent_1);
-	    ret_offspring.push_back(parent_2);
+		ret_offspring.push_back(parent_2);
 
 		return ret_offspring;
 	}
@@ -197,9 +197,9 @@ std::vector<TSPSolution> TSPCrossover::generateOffspring_OC(){  //implements Ord
 	if (rand_val < mutation_probability){
 		do_mutation(child_1);
 		do_mutation(child_2);
-    }
+	}
 
-    ret_offspring.push_back(child_1);
+	ret_offspring.push_back(child_1);
 	ret_offspring.push_back(child_2);
 
 	return ret_offspring;

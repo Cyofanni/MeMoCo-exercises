@@ -22,7 +22,7 @@ class TSPGeneticRunner{
 	     * get the best individual for every generation,
 	     * then get the best individual among all generations
 	     */
-	    TSPGeneticRunner(TSP tsp, int population_size, uint max_iter_n,  
+	        TSPGeneticRunner(TSP tsp, int population_size, uint max_iter_n,  
 								   double mut_prob, bool choose_init, 
 								   uint sim_ann_max_iter, const std::default_random_engine&,  
 								   const std::uniform_real_distribution<double>&);
